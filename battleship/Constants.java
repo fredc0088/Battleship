@@ -24,10 +24,14 @@ public class Constants {
      */
     public static final int THREE = 3;
     /**
-     * Costant integer representing 3.
+     * Costant integer representing 4.
      */
     public static final int FOUR = 4;
-
+    /**
+     * Costant integer representing 10.
+     */
+    public static final int TEN = 10;
+    
     /**
      *
      * Constructor not instantiable by external.

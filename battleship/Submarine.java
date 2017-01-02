@@ -1,20 +1,20 @@
 package battleship;
 
-import static battleship.Constants.FOUR;
+import static battleship.Constants.ONE;
 
 /**
- * This class represents a ship of class battleship.
+ * This class represents a Submarine.
  *
  *
  * @author Federico Cocco
  */
-public class Battleship extends Ship {
+public class Submarine extends Ship {
 
     /**
-     * Constructs a new <code>Battleship</code> according to the parameters.
+     * Constructs a new <code>Submarine</code> according to the parameters.
      */
-    public Battleship() {
-        super(FOUR);
+    public Submarine() {
+        super(ONE);
     }
 
     /**
@@ -24,6 +24,6 @@ public class Battleship extends Ship {
      */
     @Override
     public String getShipType() {
-        return "battleship";
+        return "submarine";
     }
 }

@@ -20,7 +20,7 @@ public class BattleshipGame {
         System.out.println("Done");
         System.out.println("The current state of the ocean: ");
         ocean.print();
-        while (! ocean.isGameOver()) {
+        while (!ocean.isGameOver()) {
             // inform the player of the results of their actions so far
             System.out.println();
             System.out.println("You have fired " + ocean.getShotsFired() + " shots.");
@@ -53,8 +53,8 @@ public class BattleshipGame {
     }
 
     /**
-     * Asks the user repeatedly until an integer from 0 to 9 is entered
-     * on the keyboard.
+     * Asks the user repeatedly until an integer from 0 to 9 is entered on the
+     * keyboard.
      *
      * @return the entered integer from 0 to 9
      */

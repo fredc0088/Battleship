@@ -5,6 +5,7 @@
  */
 package Test.battleship;
 
+import battleship.Cruiser;
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
@@ -16,9 +17,9 @@ import static org.junit.Assert.*;
  *
  * @author Administrator
  */
-public class ShipTest {
+public class CruiserTest {
     
-    public ShipTest() {
+    public CruiserTest() {
     }
     
     @BeforeClass
@@ -37,10 +38,16 @@ public class ShipTest {
     public void tearDown() {
     }
 
+    /**
+     * Test of getShipType method, of class Cruiser.
+     */
     @Test
-    public void testSomeMethod() {
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
+    public void testGetShipType() {
+        System.out.println("getShipType");
+        Cruiser instance = new Cruiser();
+        String expResult = "cruiser";
+        String result = instance.getShipType();
+        assertEquals(expResult, result);
     }
-    
+
 }
