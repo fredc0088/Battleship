@@ -8,6 +8,8 @@ import static battleship.Constants.ZERO;
 
 import static battleship.Constants.ONE;
 
+import static battleship.Constants.TWO;
+
 import static battleship.Constants.TEN;
 
 /**
@@ -88,6 +90,12 @@ public class Ocean implements Damageable {
      * the it checks all the surrounding spaces whether they are "empty". To
      * verify that, <code>isOccupied</code> method is used.
      *
+     * It also checks when the loop first start, if it is not on the border,
+     * whether the previous (diagonally as well) squares are occupied.
+     *
+     * This method aim to leave the ships completely detached from each other,
+     * in all directions.
+     *
      * @param co_x
      * @param co_y
      * @param lenght_loop
@@ -98,23 +106,40 @@ public class Ocean implements Damageable {
      */
     private boolean checkSpaceAvailability(int co_x, int co_y, int lenght_loop,
             int length_board, boolean horizontality) {
-        boolean isFree = false;
-        for (int i = ZERO; i <= lenght_loop; i++) {
+        boolean isFree = false; //flag that states whether the ship can be placed.
+
+        boolean flag = false; // flag to decide whether the loop start from o or -1.
+        /**
+         * check if there is need to consider to check the squares the squares
+         * in front of the bow of the ship (<code>co_y</code> or
+         * </code>co_x</code>, -1),
+         */
+        if (horizontality && co_y > ZERO) { // if horizontal
+            co_y--;
+            flag = true;
+        }
+        if (!horizontality && co_x > ZERO) { // or not.
+            co_x--;
+            flag = true;
+        }
+        for (int i = (flag) ? ZERO - ONE : ZERO; i <= lenght_loop; i++) {
+            /* Checks if we are still the boundary of the board, if the current position is occupied
+                and, if they exist, the surrounding squares. */
             if (co_x < length_board && co_y < length_board && !this.isOccupied(co_x, co_y)) {
                 if (horizontality) {
-                    if (co_y > ZERO && this.isOccupied(co_x - ONE, co_y)) {
+                    if (co_x > ZERO && this.isOccupied(co_x - ONE, co_y)) {
                         break;
                     }
-                    if (co_y < length_board - ONE && this.isOccupied(co_x + ONE, co_y)) {
+                    if (co_x < length_board - ONE && this.isOccupied(co_x + ONE, co_y)) {
                         break;
                     }
                     isFree = true;
                     co_y++;
                 } else {
-                    if (co_x > ZERO && this.isOccupied(co_x, co_y - ONE)) {
+                    if (co_y > ZERO && this.isOccupied(co_x, co_y - ONE)) {
                         break;
                     }
-                    if (co_x < length_board - ONE && this.isOccupied(co_x, co_y + ONE)) {
+                    if (co_y < length_board - ONE && this.isOccupied(co_x, co_y + ONE)) {
                         break;
                     }
                     isFree = true;
