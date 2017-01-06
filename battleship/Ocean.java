@@ -8,8 +8,6 @@ import static battleship.Constants.ZERO;
 
 import static battleship.Constants.ONE;
 
-import static battleship.Constants.TWO;
-
 import static battleship.Constants.TEN;
 
 /**
@@ -31,17 +29,17 @@ public class Ocean implements Damageable {
      */
     private int hitCount;
     /**
-     * Number of ships still in game.
+     * Number of ships thrown out of the game(sunk).
      */
-    private int shipsCount;
+    private int shipsSunk;
 
     /**
      * Constructs a new <code>Ocean</code> according to the parameters.
      */
     public Ocean() {
-        this.ships = initialise(new EmptySea());
+        initialiseBoard(this.ships);
         this.shotsFired = ZERO;
-        this.shipsCount = ZERO;
+        this.shipsSunk = ZERO;
         this.hitCount = ZERO;
     }
 
@@ -50,7 +48,7 @@ public class Ocean implements Damageable {
      * ocean (board).
      */
     public void placeAllShipsRandomly() {
-        ArrayList<Ship> theShips = initialise();
+        ArrayList<Ship> theShips = initialiseShips();
         for (Ship x : theShips) {
             this.placeShipRandomly(x, this.ships, new Random());
         }
@@ -155,7 +153,7 @@ public class Ocean implements Damageable {
      *
      * @return an <code>ArrayList</code> containing the ships for the game.
      */
-    private ArrayList<Ship> initialise() {
+    private ArrayList<Ship> initialiseShips() {
         ArrayList<Ship> shipsInGame = new ArrayList<>();
         shipsInGame.add(new Battleship());
         shipsInGame.add(new Cruiser());
@@ -193,25 +191,20 @@ public class Ocean implements Damageable {
     /**
      * This method fill an array with the given object type.
      *
-     * @param fillingObject
-     *
-     * @return a new <code>array</code> initialised and filled.
+     * @param initArray
      */
-    public static Ship[][] initialise(Ship fillingObject) {
-        Ship[][] initArray = new Ship[TEN][TEN];
+    public static void initialiseBoard(Ship[][] initArray) {
+        initArray = new Ship[TEN][TEN];
         for (int i = ZERO; i < initArray.length; i++) {
             for (int y = ZERO; y < initArray[i].length; y++) {
-                initArray[i][y] = fillingObject;
+                initArray[i][y] = new EmptySea();
             }
         }
-        return initArray;
     }
 
     /**
-     * Shoots at the part of the ship at that location. Returns true if the
-     * given location contains a real ship (not an EmptySea), still a float,
-     * false if it does not. In addition, this method updates the number of
-     * shots that have beenfired, and the number of hits.
+     * Shoots at the part of the ship at that location. In addition, this method
+     * updates the number of shots that have beenfired, and the number of hits.
      *
      *
      * Note: If a location contains a real ship, shootAt should return true
@@ -220,11 +213,20 @@ public class Ocean implements Damageable {
      *
      * @param row
      * @param column
-     * @return
+     * @return <code>true</code> if the given location contains a real ship
+     * still a float.
      */
     @Override
     public boolean shootAt(int row, int column) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        if (this.ships[row][column].shootAt(row, column)) {
+            this.hitCount++;
+            return true;
+        }
+        if (!this.ships[row][column].isRealShip()) {
+            ((EmptySea) this.ships[row][column]).hitEmptySea();
+        }
+        this.shotsFired++;
+        return false;
     }
 
     /**
@@ -246,7 +248,8 @@ public class Ocean implements Damageable {
      * @return
      */
     public boolean hasSunkShipAt(int row, int column) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        Ship ship_analysed = this.ships[row][column];
+        return ship_analysed.isRealShip() && ship_analysed.isSunk();
     }
 
     /**
@@ -258,16 +261,16 @@ public class Ocean implements Damageable {
      * @return
      */
     public String getShipTypeAt(int row, int column) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        return this.ships[row][column].getShipType();
     }
 
     /**
-     * Returns the number of shots red.
+     * Returns the number of shots fired.
      *
      * @return
      */
     public int getShotsFired() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        return this.shotsFired;
     }
 
     /**
@@ -278,7 +281,7 @@ public class Ocean implements Damageable {
      * @return
      */
     public int getHitCount() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        return this.hitCount;
     }
 
     /**
@@ -287,16 +290,16 @@ public class Ocean implements Damageable {
      * @return
      */
     public int getShipsSunk() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        return this.shipsSunk;
     }
 
     /**
      * Returns true if all ships have been sunk, otherwise false.
      *
-     * @return
+     * @return true if all 10 ships were sunk.
      */
     public boolean isGameOver() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        return this.getShipsSunk() >= TEN;
     }
 
     /**
@@ -305,7 +308,7 @@ public class Ocean implements Damageable {
      * could therefore be modified by some class that has no right to do so, use
      * this method only in your unit testing.)
      *
-     * @return
+     * @return the <code>ships</code> multidimensional array.
      */
     public Ship[][] getShipArray() {
         return this.ships;
@@ -316,14 +319,35 @@ public class Ocean implements Damageable {
      * displayed along the left edge of the array, and column numbers should be
      * displayed along the top. Numbers should be 0 to 9, not 1 to 10. The top
      * left corner square should be 0, 0. Use "S" to indicate a location that
-     * you have red upon and hit a (real) ship, "-" to indicate a location that
-     * you have red upon and found nothing there, "x" to indication a location
-     * containing a sunken ship, and "." to indicate a location that you have
-     * never red upon. 8 This is the only method in the Ocean class that does
-     * any input/output, and it is never called from within the Ocean class
-     * (except possibly during debugging), only from the BattleshipGame class.
+     * you have fired upon and hit a (real) ship, "-" to indicate a location
+     * that you have fired upon and found nothing there, "x" to indication a
+     * location containing a sunken ship, and "." to indicate a location that
+     * you have never fired upon. This is the only method in the Ocean class
+     * that does any input/output, and it is never called from within the Ocean
+     * class (except possibly during debugging), only from the BattleshipGame
+     * class.
      */
     public void print() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        for (int i = ZERO; i < this.ships.length; i++) {
+            if (i > ZERO) {
+                System.out.print(i - ONE);
+            }
+            for (int j = ZERO; j == this.ships.length; j++) {
+                if (i == ZERO) {
+                    if (j > ZERO) {
+                        System.out.print(j);
+                    }
+                    continue;
+                }
+                Ship square = this.ships[i][j];
+                if (!square.isRealShip()) {
+                    if((EmptySea) square.isMissedShot()) {
+                    } else {
+                        System.out.print("");
+                    }
+                }
+            }
+
+        }
     }
 }

@@ -108,7 +108,7 @@ public abstract class Ship implements Damageable {
     }
 
     /**
-     * This method checks whether a ship has benn hit or not. If a part of the
+     * This method checks whether a ship has been hit or not. If a part of the
      * ship occupies the given row and column, and the ship hasn't been sunk,
      * that part of the ship will be considered as hit.
      *
@@ -119,9 +119,10 @@ public abstract class Ship implements Damageable {
      */
     @Override
     public boolean shootAt(int row, int column) {
-        if (this.isSunk() == false && this.occupiesSlot(row, column, ONE)) {
+        if (this.isSunk() == false && this.occupiesSlot(row, column, ONE)
+                && this.hit[this.currentPart] == false) {
             this.hit[this.currentPart] = true;
-            return false;
+            return true;
         }
         return false;
     }
@@ -162,7 +163,9 @@ public abstract class Ship implements Damageable {
                 return false;
             }
             if (this.isHorizontal()) {
-                occupiesSlot(row, column, count + 1);
+                occupiesSlot(row, column + ONE, count + ONE);
+            } else {
+                occupiesSlot(row + ONE, column, count + ONE);
             }
         }
         return false;
@@ -175,4 +178,5 @@ public abstract class Ship implements Damageable {
         }
         return initArray;
     }
+    
 }
