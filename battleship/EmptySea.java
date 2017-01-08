@@ -10,15 +10,11 @@ import static battleship.Constants.ONE;
  */
 public class EmptySea extends Ship {
 
-    /* This variable represents a shot that hit water and miss ship. */
-    private boolean empty_shot;
-
     /**
      * Constructs a new <code>EmptySea</code> according to the parameters.
      */
     public EmptySea() {
         super(ONE);
-        this.empty_shot = false;
     }
 
     /**
@@ -65,13 +61,4 @@ public class EmptySea extends Ship {
         return false;
     }
 
-    public void hitEmptySea() {
-        if (!this.empty_shot) {
-            this.empty_shot = true;
-        }
-    }
-    
-    public boolean isMissedShot() {
-        return this.empty_shot;
-    }
 }

@@ -119,8 +119,7 @@ public abstract class Ship implements Damageable {
      */
     @Override
     public boolean shootAt(int row, int column) {
-        if (this.isSunk() == false && this.occupiesSlot(row, column, ONE)
-                && this.hit[this.currentPart] == false) {
+        if (this.isSunk() == false && this.occupiesSlot(row, column, this.getBowRow(), this.getBowColumn(), ONE)) {
             this.hit[this.currentPart] = true;
             return true;
         }
@@ -154,23 +153,40 @@ public abstract class Ship implements Damageable {
         return hitCount == hit.length;
     }
 
-    private boolean occupiesSlot(int row, int column, int count) {
-        if (row == this.getBowRow() && column == this.getBowColumn()) {
-            this.currentPart = count;
-            return true;
-        } else {
+    /**
+     * This helper method checks whether the given coordinates on the board
+     * match with any part of the ship. It first checks the front, if that is
+     * not the part hit, it recursevely checks the rest of the ship.
+     *
+     * @param row
+     * @param column
+     * @param rowToCompare
+     * @param columnToCompare
+     * @param count
+     * @return <code>false</code> if no part was hit, otherwise
+     * <code>true</code>.
+     */
+    private boolean occupiesSlot(int row, int column, int rowToCompare, int columnToCompare, int count) {
+        if (row != rowToCompare || column != columnToCompare) {
             if (count == this.length) {
                 return false;
             }
             if (this.isHorizontal()) {
-                occupiesSlot(row, column + ONE, count + ONE);
+                occupiesSlot(row, column, rowToCompare, columnToCompare + ONE, count + ONE);
             } else {
-                occupiesSlot(row + ONE, column, count + ONE);
+                occupiesSlot(row, column, rowToCompare + ONE, columnToCompare, count + ONE);
             }
         }
-        return false;
+        this.currentPart = count;
+        return true;
     }
 
+    /**
+     * Initialise a new array with <code>true</code> or <code>false</code>.
+     *
+     * @param val
+     * @return a filled array of <code>boolean</code> values.
+     */
     private boolean[] initialise(boolean val) {
         boolean[] initArray = new boolean[length];
         for (int i = ZERO; i < initArray.length; i++) {
@@ -178,5 +194,4 @@ public abstract class Ship implements Damageable {
         }
         return initArray;
     }
-    
 }

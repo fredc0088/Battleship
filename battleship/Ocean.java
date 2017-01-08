@@ -32,12 +32,17 @@ public class Ocean implements Damageable {
      * Number of ships thrown out of the game(sunk).
      */
     private int shipsSunk;
+    /**
+     * The graphical representation of the board and its current status.
+     */
+    private String[][] battlefield;
 
     /**
      * Constructs a new <code>Ocean</code> according to the parameters.
      */
     public Ocean() {
-        initialiseBoard(this.ships);
+        this.ships = initialiseBoard();
+        this.battlefield = initialiseBattlefield();
         this.shotsFired = ZERO;
         this.shipsSunk = ZERO;
         this.hitCount = ZERO;
@@ -67,8 +72,8 @@ public class Ocean implements Damageable {
                 length = ship.Length();
         boolean ship_orientation = placer.nextBoolean();
         if (this.checkSpaceAvailability(x, y, length, board.length, ship_orientation)) {
-            ship.setBowRow(placer.nextInt(board.length)); // Setting the position 
-            ship.setBowColumn(placer.nextInt(board.length)); // of the front of the ship
+            ship.setBowRow(x); // Setting the position 
+            ship.setBowColumn(y); // of the front of the ship
             ship.setHorizontal(ship_orientation); //  and its orientation.
             for (int i = ZERO; i < length; i++) { // Iterate through the length of the ship.
                 if (ship.isHorizontal()) {
@@ -123,7 +128,7 @@ public class Ocean implements Damageable {
         for (int i = (flag) ? ZERO - ONE : ZERO; i <= lenght_loop; i++) {
             /* Checks if we are still the boundary of the board, if the current position is occupied
                 and, if they exist, the surrounding squares. */
-            if (co_x < length_board && co_y < length_board && !this.isOccupied(co_x, co_y)) {
+            if (co_x < length_board && co_y < length_board && this.isOccupied(co_x, co_y) == false) {
                 if (horizontality) {
                     if (co_x > ZERO && this.isOccupied(co_x - ONE, co_y)) {
                         break;
@@ -131,7 +136,6 @@ public class Ocean implements Damageable {
                     if (co_x < length_board - ONE && this.isOccupied(co_x + ONE, co_y)) {
                         break;
                     }
-                    isFree = true;
                     co_y++;
                 } else {
                     if (co_y > ZERO && this.isOccupied(co_x, co_y - ONE)) {
@@ -140,8 +144,10 @@ public class Ocean implements Damageable {
                     if (co_y < length_board - ONE && this.isOccupied(co_x, co_y + ONE)) {
                         break;
                     }
-                    isFree = true;
                     co_x++;
+                }
+                if (i == lenght_loop - 1) {
+                    isFree = true;
                 }
             }
         }
@@ -165,7 +171,7 @@ public class Ocean implements Damageable {
         shipsInGame.add(new Submarine());
         shipsInGame.add(new Submarine());
         shipsInGame.add(new Submarine());
-        shipsInGame = this.sorting(shipsInGame);
+        this.sorting(shipsInGame);
         return shipsInGame;
     }
 
@@ -176,8 +182,8 @@ public class Ocean implements Damageable {
      *
      * @return the <code>ArrayList</code> sorted
      */
-    private ArrayList<Ship> sorting(ArrayList<Ship> toBeSorted) {
-        for (int i = ZERO; i < toBeSorted.size(); i++) {
+    private void sorting(ArrayList<Ship> toBeSorted) {
+        for (int i = ZERO; i < toBeSorted.size() - ONE; i++) {
             Ship current_el = toBeSorted.get(i);
             Ship next_el = toBeSorted.get(i + 1);
             if (current_el.Length() < next_el.Length()) {
@@ -185,21 +191,34 @@ public class Ocean implements Damageable {
                 toBeSorted.set(i, current_el);
             }
         }
-        return toBeSorted;
     }
 
     /**
      * This method fill an array with the given object type.
      *
-     * @param initArray
      */
-    public static void initialiseBoard(Ship[][] initArray) {
-        initArray = new Ship[TEN][TEN];
+    private static Ship[][] initialiseBoard() {
+        Ship[][] initArray = new Ship[TEN][TEN];
         for (int i = ZERO; i < initArray.length; i++) {
             for (int y = ZERO; y < initArray[i].length; y++) {
                 initArray[i][y] = new EmptySea();
             }
         }
+        return initArray;
+    }
+
+    /**
+     * This method fill an array with <code>String</code> objects.
+     *
+     */
+    private static String[][] initialiseBattlefield() {
+        String[][] initArray = new String[TEN][TEN];
+        for (int i = ZERO; i < initArray.length; i++) {
+            for (int y = ZERO; y < initArray[i].length; y++) {
+                initArray[i][y] = ".";
+            }
+        }
+        return initArray;
     }
 
     /**
@@ -214,16 +233,26 @@ public class Ocean implements Damageable {
      * @param row
      * @param column
      * @return <code>true</code> if the given location contains a real ship
-     * still a float.
+     * still floating.
      */
     @Override
     public boolean shootAt(int row, int column) {
+        if (row == (int) row || column == (int) column) {
+            throw new IllegalArgumentException("Only entire numbers are allowed");
+        }
+        if (row < ZERO || column < ZERO) {
+            throw new IllegalArgumentException("Must enter only positive values");
+        }
+        if (row >= TEN || column >= TEN) {
+            throw new IllegalArgumentException("Values cannot be higher than the board");
+        }
         if (this.ships[row][column].shootAt(row, column)) {
+            this.battlefield[row][column] = "S";
             this.hitCount++;
             return true;
         }
-        if (!this.ships[row][column].isRealShip()) {
-            ((EmptySea) this.ships[row][column]).hitEmptySea();
+        if (this.ships[row][column].isRealShip() == false) {
+            this.battlefield[row][column] = "-";
         }
         this.shotsFired++;
         return false;
@@ -237,7 +266,7 @@ public class Ocean implements Damageable {
      * @return
      */
     public boolean isOccupied(int row, int column) {
-        return !(this.ships[row][column].isRealShip());
+        return this.ships[row][column].isRealShip();
     }
 
     /**
@@ -265,29 +294,31 @@ public class Ocean implements Damageable {
     }
 
     /**
-     * Returns the number of shots fired.
+     * Gets how many shots have been fired until that moment during the current
+     * game.
      *
-     * @return
+     * @return the number of shots fired.
      */
     public int getShotsFired() {
         return this.shotsFired;
     }
 
     /**
-     * Returns the number of hits recorded. All hits are counted, not just the
-     * first time a given square is hit (see also the documentation for the
-     * shootAt method).
+     * Gets how many succesful hits has been shot until that moment during the
+     * current game. All hits are counted, not just the first time a given
+     * square is hit.
      *
-     * @return
+     * @return the number hits.
      */
     public int getHitCount() {
         return this.hitCount;
     }
 
     /**
-     * Returns the number of ships sunk.
+     * Gets how many ships has been sunken until that moment during the current
+     * game.
      *
-     * @return
+     * @return the number of ships sunken.
      */
     public int getShipsSunk() {
         return this.shipsSunk;
@@ -296,17 +327,14 @@ public class Ocean implements Damageable {
     /**
      * Returns true if all ships have been sunk, otherwise false.
      *
-     * @return true if all 10 ships were sunk.
+     * @return true if all 10 ships were sunken.
      */
     public boolean isGameOver() {
         return this.getShipsSunk() >= TEN;
     }
 
     /**
-     * Returns the 10x10 array of ships. (You will probably need this method for
-     * testing. However, since it returns the actual array of actual ships, and
-     * could therefore be modified by some class that has no right to do so, use
-     * this method only in your unit testing.)
+     * Returns the 10x10 array of ships. Method solely for testing.
      *
      * @return the <code>ships</code> multidimensional array.
      */
@@ -315,39 +343,36 @@ public class Ocean implements Damageable {
     }
 
     /**
-     * Prints the ocean on stdout. To aid the user, row numbers should be
-     * displayed along the left edge of the array, and column numbers should be
-     * displayed along the top. Numbers should be 0 to 9, not 1 to 10. The top
-     * left corner square should be 0, 0. Use "S" to indicate a location that
-     * you have fired upon and hit a (real) ship, "-" to indicate a location
-     * that you have fired upon and found nothing there, "x" to indication a
-     * location containing a sunken ship, and "." to indicate a location that
-     * you have never fired upon. This is the only method in the Ocean class
-     * that does any input/output, and it is never called from within the Ocean
-     * class (except possibly during debugging), only from the BattleshipGame
-     * class.
+     * Prints the ocean on stdout.
+     *
+     * The squares are counted from 0 to 9. Here is a legend of the significance
+     * of what is going to appear on ouput: S : a place where a ship in that
+     * position was hit. - : a shot hit an empty space. X : a sunken ship. . :
+     * this position has not been shot yet.
      */
     public void print() {
-        for (int i = ZERO; i < this.ships.length; i++) {
-            if (i > ZERO) {
-                System.out.print(i - ONE);
+        for (int i = ZERO - ONE; i <= this.ships.length; i++) {
+            if (i >= ZERO && i < this.ships.length) {
+                System.out.print(i + "  ");
             }
-            for (int j = ZERO; j == this.ships.length; j++) {
-                if (i == ZERO) {
-                    if (j > ZERO) {
-                        System.out.print(j);
+            for (int j = ZERO; j <= this.ships.length; j++) {
+                try {
+                    if (i < ZERO) {
+                        if (j > ZERO) {
+                            System.out.print(j - ONE);
+                        } else {
+                            System.out.print(" ");
+                        }
+                        continue;
                     }
-                    continue;
-                }
-                Ship square = this.ships[i][j];
-                if (!square.isRealShip()) {
-                    if((EmptySea) square.isMissedShot()) {
-                    } else {
-                        System.out.print("");
+                    if (this.hasSunkShipAt(i, j)) {
+                        System.out.print("X");
                     }
+                    System.out.print(this.battlefield[i][j]);
+                } catch (IndexOutOfBoundsException ex) {
                 }
             }
-
+            System.out.println(" ");
         }
     }
 }
