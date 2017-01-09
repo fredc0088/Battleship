@@ -5,6 +5,8 @@ import static battleship.Constants.ZERO;
 import static battleship.Constants.ONE;
 
 /**
+ * This class is a represnetation of a general ship archetipe for the game, to
+ * be used to construct specific types of ships.
  *
  * @author Federico Cocco
  */
@@ -119,7 +121,8 @@ public abstract class Ship implements Damageable {
      */
     @Override
     public boolean shootAt(int row, int column) {
-        if (this.isSunk() == false && this.occupiesSlot(row, column, this.getBowRow(), this.getBowColumn(), ONE)) {
+        if (this.isSunk() == false) {
+            this.findPartHit(row, column, this.getBowRow(), this.getBowColumn(), ZERO);
             this.hit[this.currentPart] = true;
             return true;
         }
@@ -150,7 +153,7 @@ public abstract class Ship implements Damageable {
                 hitCount++;
             }
         }
-        return hitCount == hit.length;
+        return hitCount == this.Length();
     }
 
     /**
@@ -166,19 +169,16 @@ public abstract class Ship implements Damageable {
      * @return <code>false</code> if no part was hit, otherwise
      * <code>true</code>.
      */
-    private boolean occupiesSlot(int row, int column, int rowToCompare, int columnToCompare, int count) {
+    private void findPartHit(int row, int column, int rowToCompare, int columnToCompare, int shipPart) {
         if (row != rowToCompare || column != columnToCompare) {
-            if (count == this.length) {
-                return false;
-            }
             if (this.isHorizontal()) {
-                occupiesSlot(row, column, rowToCompare, columnToCompare + ONE, count + ONE);
+                findPartHit(row, column, rowToCompare, columnToCompare + ONE, shipPart + ONE);
             } else {
-                occupiesSlot(row, column, rowToCompare + ONE, columnToCompare, count + ONE);
+                findPartHit(row, column, rowToCompare + ONE, columnToCompare, shipPart + ONE);
             }
+        } else if (row == rowToCompare && column == columnToCompare) {
+            this.currentPart = shipPart;
         }
-        this.currentPart = count;
-        return true;
     }
 
     /**
@@ -188,7 +188,7 @@ public abstract class Ship implements Damageable {
      * @return a filled array of <code>boolean</code> values.
      */
     private boolean[] initialise(boolean val) {
-        boolean[] initArray = new boolean[length];
+        boolean[] initArray = new boolean[this.Length()];
         for (int i = ZERO; i < initArray.length; i++) {
             initArray[i] = val;
         }
