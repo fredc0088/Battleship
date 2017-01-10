@@ -8,9 +8,17 @@ import static battleship.Constants.ZERO;
 
 import static battleship.Constants.ONE;
 
+import static battleship.Constants.TWO;
+
 import static battleship.Constants.TEN;
 
 /**
+ * This class is a representation of the game and the board. It is a 10x10
+ * board, then 10 ships are randomly placed on it, without touching each other
+ * on any directions. The user needs to enter the two coordinates (as integers)
+ * to try to shoot down any of those ships. For point's sake a counter of hit
+ * ships, sunken ships and overall shots fired are kept. When 10 ships are
+ * sunken, the game ends.
  *
  * @author Federico Cocco
  */
@@ -110,7 +118,6 @@ public class Ocean implements Damageable {
     private boolean checkSpaceAvailability(int co_x, int co_y, int lenght_loop,
             int length_board, boolean horizontality) {
         boolean isFree = false; //flag that states whether the ship can be placed.
-
         boolean flag = false; // flag to decide whether the loop start from o or -1.
         /**
          * check if there is need to consider to check the squares the squares
@@ -146,7 +153,7 @@ public class Ocean implements Damageable {
                     }
                     co_x++;
                 }
-                if (i == lenght_loop - 1) {
+                if (i == lenght_loop - ONE) {
                     isFree = true;
                 }
             }
@@ -237,7 +244,7 @@ public class Ocean implements Damageable {
      */
     @Override
     public boolean shootAt(int row, int column) {
-        if (row == (int) row || column == (int) column) {
+        if (row != (int) row || column != (int) column) {
             throw new IllegalArgumentException("Only entire numbers are allowed");
         }
         if (row < ZERO || column < ZERO) {
@@ -246,15 +253,18 @@ public class Ocean implements Damageable {
         if (row >= TEN || column >= TEN) {
             throw new IllegalArgumentException("Values cannot be higher than the board");
         }
+        this.shotsFired++; // updates total shots fired
         if (this.ships[row][column].shootAt(row, column)) {
-            this.battlefield[row][column] = "S";
-            this.hitCount++;
+            if (this.hasSunkShipAt(row, column)) {
+                this.shipsSunk++; // updates total ship sunken
+            }
+            this.updateOceanGraphic(row, column, "S");
+            this.hitCount++; // updates total hits
             return true;
         }
         if (this.ships[row][column].isRealShip() == false) {
-            this.battlefield[row][column] = "-";
+            this.updateOceanGraphic(row, column, "-");
         }
-        this.shotsFired++;
         return false;
     }
 
@@ -278,7 +288,7 @@ public class Ocean implements Damageable {
      */
     public boolean hasSunkShipAt(int row, int column) {
         Ship ship_analysed = this.ships[row][column];
-        return ship_analysed.isRealShip() && ship_analysed.isSunk();
+        return ship_analysed.isSunk();
     }
 
     /**
@@ -343,6 +353,18 @@ public class Ocean implements Damageable {
     }
 
     /**
+     * This method update a position in the graphical representation of the ship
+     * with a given new <code>String</code>.
+     *
+     * @param row
+     * @param column
+     * @param update
+     */
+    private void updateOceanGraphic(int row, int column, String update) {
+        this.battlefield[row][column] = update;
+    }
+
+    /**
      * Prints the ocean on stdout.
      *
      * The squares are counted from 0 to 9. Here is a legend of the significance
@@ -355,10 +377,10 @@ public class Ocean implements Damageable {
             if (i >= ZERO && i < this.ships.length) {
                 System.out.print(i + "  ");
             }
-            for (int j = ZERO; j <= this.ships.length; j++) {
+            for (int j = ZERO - TWO; j <= this.ships.length; j++) {
                 try {
                     if (i < ZERO) {
-                        if (j > ZERO) {
+                        if (j >= ONE) {
                             System.out.print(j - ONE);
                         } else {
                             System.out.print(" ");
@@ -367,8 +389,9 @@ public class Ocean implements Damageable {
                     }
                     if (this.hasSunkShipAt(i, j)) {
                         System.out.print("X");
+                    } else {
+                        System.out.print(this.battlefield[i][j]);
                     }
-                    System.out.print(this.battlefield[i][j]);
                 } catch (IndexOutOfBoundsException ex) {
                 }
             }

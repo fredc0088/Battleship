@@ -88,6 +88,9 @@ public abstract class Ship implements Damageable {
      * @param row
      */
     public void setBowRow(int row) {
+        if (row < 0) {
+            throw new IllegalArgumentException("Only positive integers allowed");
+        }
         this.bowRow = row;
     }
 
@@ -97,6 +100,9 @@ public abstract class Ship implements Damageable {
      * @param column
      */
     public void setBowColumn(int column) {
+        if (column < 0) {
+            throw new IllegalArgumentException("Only positive integers allowed");
+        }
         this.bowColumn = column;
     }
 

@@ -3,8 +3,8 @@ package battleship;
 import static battleship.Constants.ONE;
 
 /**
- * This class represents a space on the ocean without ship in it.
- *
+ * This class represents a space on the ocean without ship in it. It is consider
+ * a ship type for code's simplicity.
  *
  * @author Federico Cocco
  */
