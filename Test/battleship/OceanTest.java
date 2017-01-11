@@ -1,4 +1,3 @@
-
 package Test.battleship;
 
 import battleship.Ocean;
@@ -7,34 +6,70 @@ import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import static org.junit.Assert.*;
+import org.junit.Rule;
+import org.junit.rules.ExpectedException;
 
 /**
  *
  * @author Federico Cocco
  */
 public class OceanTest {
-    
+
+    private Ocean instance;
+
     public OceanTest() {
+        this.instance = new Ocean();
+        instance.placeAllShipsRandomly();
     }
-    
+
     @BeforeClass
     public static void setUpClass() {
+
     }
-    
+
     @AfterClass
     public static void tearDownClass() {
     }
 
+    @Rule
+    public ExpectedException thrown = ExpectedException.none();
+
     /**
      * Test of placeAllShipsRandomly method, of class Ocean.
      */
-    @Test
+    @Test()
     public void testPlaceAllShipsRandomly() {
         System.out.println("placeAllShipsRandomly");
-        Ocean instance = new Ocean();
-        instance.placeAllShipsRandomly();
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
+//        Ocean instance = new Ocean();
+//        instance.placeAllShipsRandomly();
+        Ship[][] testArray = instance.getShipArray();
+        int count = 0;
+        for (int i = 0; i < testArray.length; i++) {
+            for (int j = 0; j < testArray.length; j++) {
+                if (testArray[i][j].isRealShip()) {
+                    count++;
+                }
+                switch (testArray[i][j].getClass().getName()) {
+                    case "battleship":
+                        System.out.print("b");
+                        break;
+                    case "cruiser":
+                        System.out.print("c");
+                        break;
+                    case "destroyer":
+                        System.out.print("d");
+                        break;
+                    case "submarine":
+                        System.out.print("s");
+                        break;
+                    default:
+                        System.out.print("e");
+                }
+            }
+            System.out.println();
+        }
+        assertEquals(20, count);
+
     }
 
     /**
@@ -182,5 +217,5 @@ public class OceanTest {
         // TODO review the generated test code and remove the default call to fail.
         fail("The test case is a prototype.");
     }
-    
+
 }

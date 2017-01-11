@@ -119,10 +119,9 @@ public class Ocean implements Damageable {
             int length_board, boolean horizontality) {
         boolean isFree = false; //flag that states whether the ship can be placed.
         boolean flag = false; // flag to decide whether the loop start from o or -1.
-        /**
+        /*
          * check if there is need to consider to check the squares the squares
-         * in front of the bow of the ship (<code>co_y</code> or
-         * </code>co_x</code>, -1),
+         * in front of the bow of the ship (co_y or co_x, -1),
          */
         if (horizontality && co_y > ZERO) { // if horizontal
             co_y--;
@@ -135,28 +134,45 @@ public class Ocean implements Damageable {
         for (int i = (flag) ? ZERO - ONE : ZERO; i <= lenght_loop; i++) {
             /* Checks if we are still the boundary of the board, if the current position is occupied
                 and, if they exist, the surrounding squares. */
-            if (co_x < length_board && co_y < length_board && this.isOccupied(co_x, co_y) == false) {
+            if (co_x == length_board || co_y == length_board) {
+                break;
+            }
+            if (this.isOccupied(co_x, co_y) == false) {
                 if (horizontality) {
                     if (co_x > ZERO && this.isOccupied(co_x - ONE, co_y)) {
+                        if (i == lenght_loop) {
+                            isFree = false;
+                        }
                         break;
                     }
                     if (co_x < length_board - ONE && this.isOccupied(co_x + ONE, co_y)) {
+                        if (i == lenght_loop) {
+                            isFree = false;
+                        }
                         break;
                     }
                     co_y++;
                 } else {
                     if (co_y > ZERO && this.isOccupied(co_x, co_y - ONE)) {
+                        if (i == lenght_loop) {
+                            isFree = false;
+                        }
                         break;
                     }
                     if (co_y < length_board - ONE && this.isOccupied(co_x, co_y + ONE)) {
+                        if (i == lenght_loop) {
+                            isFree = false;
+                        }
                         break;
                     }
                     co_x++;
                 }
-                if (i == lenght_loop - ONE) {
+                if (i == lenght_loop - ONE) { // set to true if all space TO BE OCCUPIED is checked
                     isFree = true;
                 }
-            }
+            } else if (i == lenght_loop && this.isOccupied(co_x, co_y)) { // set flag back to false
+                isFree = false;                                          // if the space behind the ship
+            }                                                            // is occupied       
         }
         return isFree;
     }
