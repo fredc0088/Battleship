@@ -107,70 +107,70 @@ public class Ocean implements Damageable {
      * This method aim to leave the ships completely detached from each other,
      * in all directions.
      *
-     * @param co_x
-     * @param co_y
+     * @param row
+     * @param column
      * @param lenght_loop
      * @param length_board
      *
      * @return <code>true</code> if it is possible to place a ship in the given
      * spaces.
      */
-    private boolean checkSpaceAvailability(int co_x, int co_y, int lenght_loop,
+    private boolean checkSpaceAvailability(int row, int column, int lenght_loop,
             int length_board, boolean horizontality) {
         boolean isFree = false; //flag that states whether the ship can be placed.
         boolean flag = false; // flag to decide whether the loop start from o or -1.
         /*
          * check if there is need to consider to check the squares the squares
-         * in front of the bow of the ship (co_y or co_x, -1),
+         * in front of the bow of the ship (column or row, -1),
          */
-        if (horizontality && co_y > ZERO) { // if horizontal
-            co_y--;
+        if (horizontality && column > ZERO) { // if horizontal
+            column--;
             flag = true;
         }
-        if (!horizontality && co_x > ZERO) { // or not.
-            co_x--;
+        if (!horizontality && row > ZERO) { // or not.
+            row--;
             flag = true;
         }
         for (int i = (flag) ? ZERO - ONE : ZERO; i <= lenght_loop; i++) {
             /* Checks if we are still the boundary of the board, if the current position is occupied
                 and, if they exist, the surrounding squares. */
-            if (co_x == length_board || co_y == length_board) {
+            if (row == length_board || column == length_board) {
                 break;
             }
-            if (this.isOccupied(co_x, co_y) == false) {
+            if (this.isOccupied(row, column) == false) {
                 if (horizontality) {
-                    if (co_x > ZERO && this.isOccupied(co_x - ONE, co_y)) {
+                    if (row > ZERO && this.isOccupied(row - ONE, column)) {
                         if (i == lenght_loop) {
                             isFree = false;
                         }
                         break;
                     }
-                    if (co_x < length_board - ONE && this.isOccupied(co_x + ONE, co_y)) {
+                    if (row < length_board - ONE && this.isOccupied(row + ONE, column)) {
                         if (i == lenght_loop) {
                             isFree = false;
                         }
                         break;
                     }
-                    co_y++;
+                    column++;
                 } else {
-                    if (co_y > ZERO && this.isOccupied(co_x, co_y - ONE)) {
+                    if (column > ZERO && this.isOccupied(row, column - ONE)) {
                         if (i == lenght_loop) {
                             isFree = false;
                         }
                         break;
                     }
-                    if (co_y < length_board - ONE && this.isOccupied(co_x, co_y + ONE)) {
+                    if (column < length_board - ONE && this.isOccupied(row, column + ONE)) {
                         if (i == lenght_loop) {
                             isFree = false;
                         }
                         break;
                     }
-                    co_x++;
+                    row++;
                 }
                 if (i == lenght_loop - ONE) { // set to true if all space TO BE OCCUPIED is checked
                     isFree = true;
                 }
-            } else if (i == lenght_loop && this.isOccupied(co_x, co_y)) { // set flag back to false
+            } else if (i == lenght_loop && this.isOccupied(row, column)) { // set flag back to false
                 isFree = false;                                          // if the space behind the ship
             }                                                            // is occupied       
         }
