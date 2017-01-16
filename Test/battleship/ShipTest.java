@@ -1,6 +1,7 @@
 package Test.battleship;
 
 import battleship.Ship;
+import battleship.EmptySea;
 import battleship.Battleship;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
@@ -34,12 +35,11 @@ public class ShipTest {
     @Test
     public void testIsHorizontal() {
         System.out.println("isHorizontal");
-        Ship instance = null;
-        boolean expResult = false;
-        boolean result = instance.isHorizontal();
+        Ship instance_test = new Battleship();
+        instance_test.setHorizontal(true);
+        boolean expResult = true;
+        boolean result = instance_test.isHorizontal();
         assertEquals(expResult, result);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
     }
 
     /**
@@ -166,12 +166,10 @@ public class ShipTest {
     @Test
     public void testIsRealShip() {
         System.out.println("isRealShip");
-        Ship instance = null;
+        Ship instance = new EmptySea();
         boolean expResult = false;
         boolean result = instance.isRealShip();
         assertEquals(expResult, result);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
     }
 
     /**
@@ -180,7 +178,7 @@ public class ShipTest {
     @Test
     public void testIsSunk() {
         System.out.println("isSunk");
-        Ship instance = null;
+        Ship instance = new Battleship();
         boolean expResult = false;
         boolean result = instance.isSunk();
         assertEquals(expResult, result);

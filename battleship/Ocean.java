@@ -45,15 +45,18 @@ public class Ocean implements Damageable {
      */
     private String[][] battlefield;
 
+    {
+        this.shotsFired = ZERO;
+        this.shipsSunk = ZERO;
+        this.hitCount = ZERO;
+    }
+
     /**
      * Constructs a new <code>Ocean</code> according to the parameters.
      */
     public Ocean() {
         this.ships = initialiseBoard();
         this.battlefield = initialiseBattlefield();
-        this.shotsFired = ZERO;
-        this.shipsSunk = ZERO;
-        this.hitCount = ZERO;
     }
 
     /**
@@ -132,8 +135,8 @@ public class Ocean implements Damageable {
             flag = true;
         }
         for (int i = (flag) ? ZERO - ONE : ZERO; i <= lenght_loop; i++) {
-            /* Checks if we are still the boundary of the board, if the current position is occupied
-                and, if they exist, the surrounding squares. */
+            /* Checks if we are still the boundary of the board, if the current 
+            position is occupied and, if they exist, the surrounding squares. */
             if (row == length_board || column == length_board) {
                 break;
             }
@@ -274,8 +277,10 @@ public class Ocean implements Damageable {
             if (this.hasSunkShipAt(row, column)) {
                 this.shipsSunk++; // updates total ship sunken
             }
-            this.updateOceanGraphic(row, column, "S");
-            this.hitCount++; // updates total hits
+            if (!"S".equals(this.battlefield[row][column])) {
+                this.updateOceanGraphic(row, column, "S");
+                this.hitCount++; // updates total hits
+            }
             return true;
         }
         if (this.ships[row][column].isRealShip() == false) {
