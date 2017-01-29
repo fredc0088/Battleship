@@ -15,11 +15,7 @@ import org.junit.rules.ExpectedException;
  */
 public class OceanTest {
 
-    private Ocean instance;
-
-    public OceanTest() {
-        this.instance = new Ocean();
-        instance.placeAllShipsRandomly();
+    public OceanTest() {        
     }
 
     @BeforeClass
@@ -40,16 +36,16 @@ public class OceanTest {
     @Test()
     public void testPlaceAllShipsRandomly() {
         System.out.println("placeAllShipsRandomly");
-//        Ocean instance = new Ocean();
-//        instance.placeAllShipsRandomly();
+        Ocean instance = new Ocean();
+        instance.placeAllShipsRandomly();
         Ship[][] testArray = instance.getShipArray();
         int count = 0;
-        for (int i = 0; i < testArray.length; i++) {
+        for (Ship[] testArray1 : testArray) {
             for (int j = 0; j < testArray.length; j++) {
-                if (testArray[i][j].isRealShip()) {
+                if (testArray1[j].isRealShip()) {
                     count++;
                 }
-                switch (testArray[i][j].getClass().getName()) {
+                switch (testArray1[j].getClass().getName()) {
                     case "battleship":
                         System.out.print("b");
                         break;
@@ -129,11 +125,10 @@ public class OceanTest {
         int row = 0;
         int column = 0;
         Ocean instance = new Ocean();
-        String expResult = "";
+        Ship[][] arrayTest = instance.getShipArray();
+        //String expResult = arrayTest[3][4].getShipType();
         String result = instance.getShipTypeAt(row, column);
         assertEquals(expResult, result);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
     }
 
     /**
