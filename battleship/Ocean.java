@@ -43,8 +43,9 @@ public class Ocean implements Damageable {
     /**
      * The graphical representation of the board and its current status.
      */
-    private String[][] battlefield;
-
+    private Battlefield battlefield;
+    
+    /** initialisation for below variables */
     {
         this.shotsFired = ZERO;
         this.shipsSunk = ZERO;
@@ -55,8 +56,13 @@ public class Ocean implements Damageable {
      * Constructs a new <code>Ocean</code> according to the parameters.
      */
     public Ocean() {
-        this.ships = initialiseBoard();
-        this.battlefield = initialiseBattlefield();
+        this.battlefield = new Battlefield(TEN);
+        this.ships = new Ship[TEN][TEN];
+        for (int i = ZERO; i < ships.length; i++) {
+            for (int y = ZERO; y < ships.length; y++) {
+                this.ships[i][y] = new EmptySea();
+            }
+        }
     }
 
     /**
@@ -220,34 +226,6 @@ public class Ocean implements Damageable {
     }
 
     /**
-     * This method fill an array with the given object type.
-     *
-     */
-    private static Ship[][] initialiseBoard() {
-        Ship[][] initArray = new Ship[TEN][TEN];
-        for (int i = ZERO; i < initArray.length; i++) {
-            for (int y = ZERO; y < initArray[i].length; y++) {
-                initArray[i][y] = new EmptySea();
-            }
-        }
-        return initArray;
-    }
-
-    /**
-     * This method fill an array with <code>String</code> objects.
-     *
-     */
-    private static String[][] initialiseBattlefield() {
-        String[][] initArray = new String[TEN][TEN];
-        for (int i = ZERO; i < initArray.length; i++) {
-            for (int y = ZERO; y < initArray[i].length; y++) {
-                initArray[i][y] = ".";
-            }
-        }
-        return initArray;
-    }
-
-    /**
      * Shoots at the part of the ship at that location. In addition, this method
      * updates the number of shots that have beenfired, and the number of hits.
      *
@@ -277,14 +255,14 @@ public class Ocean implements Damageable {
             if (this.hasSunkShipAt(row, column)) {
                 this.shipsSunk++; // updates total ship sunken
             }
-            if (!"S".equals(this.battlefield[row][column])) {
-                this.updateOceanGraphic(row, column, "S");
+            if (this.battlefield.isAlreadyHit(row,column)) {
+                this.battlefield.updateSquare(row, column, "S");
                 this.hitCount++; // updates total hits
             }
             return true;
         }
         if (this.ships[row][column].isRealShip() == false) {
-            this.updateOceanGraphic(row, column, "-");
+            this.battlefield.updateSquare(row, column, "-");
         }
         return false;
     }
@@ -374,18 +352,6 @@ public class Ocean implements Damageable {
     }
 
     /**
-     * This method update a position in the graphical representation of the ship
-     * with a given new <code>String</code>.
-     *
-     * @param row
-     * @param column
-     * @param update
-     */
-    private void updateOceanGraphic(int row, int column, String update) {
-        this.battlefield[row][column] = update;
-    }
-
-    /**
      * Prints the ocean on stdout.
      *
      * The squares are counted from 0 to 9. Here is a legend of the significance
@@ -409,9 +375,10 @@ public class Ocean implements Damageable {
                         continue;
                     }
                     if (this.hasSunkShipAt(i, j)) {
-                        System.out.print("X");
+                        this.battlefield.updateSquare(i,j,"X");
+                        this.battlefield.print(i,j);
                     } else {
-                        System.out.print(this.battlefield[i][j]);
+                        this.battlefield.print(i,j);
                     }
                 } catch (IndexOutOfBoundsException ex) {
                 }
