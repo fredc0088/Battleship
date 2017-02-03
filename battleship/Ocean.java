@@ -40,16 +40,11 @@ public class Ocean<T extends Ship> implements Damageable {
      * Number of ships thrown out of the game(sunk).
      */
     private int shipsSunk;
-    /**
-     * The graphical representation of the board and its current status.
-     */
-    private Battlefield battlefield;
 
     /**
      * Constructs a new <code>Ocean</code> according to the parameters.
      */
     public Ocean() {
-        this.battlefield = new Battlefield(TEN);
         this.ships = new Ship[TEN][TEN];
         for (int i = ZERO; i < ships.length; i++) {
             for (int y = ZERO; y < ships.length; y++) {
@@ -248,14 +243,8 @@ public class Ocean<T extends Ship> implements Damageable {
             if (this.hasSunkShipAt(row, column)) {
                 this.shipsSunk++; // updates total ship sunken
             }
-            if (this.battlefield.isAlreadyHit(row, column)) {
-                this.battlefield.updateSquare(row, column, "S");
-                this.hitCount++; // updates total hits
-            }
+            this.hitCount++; // updates total hits
             return true;
-        }
-        if (this.ships[row][column].isRealShip() == false) {
-            this.battlefield.updateSquare(row, column, "-");
         }
         return false;
     }
