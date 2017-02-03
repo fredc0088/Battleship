@@ -37,7 +37,11 @@ public abstract class Ship implements Damageable {
      */
     public Ship(int length) {
         this.length = length;
-        this.hit = initialise(false);
+        this.hit = new boolean[this.length];
+        for (int i = ZERO; i < this.hit.length; i++) {
+            this.hit[i] = false;
+        }
+
     }
 
     /**
@@ -187,17 +191,18 @@ public abstract class Ship implements Damageable {
         }
     }
 
-    /**
-     * Initialise a new array with <code>true</code> or <code>false</code>.
-     *
-     * @param val
-     * @return a filled array of <code>boolean</code> values.
-     */
-    private boolean[] initialise(boolean val) {
-        boolean[] initArray = new boolean[this.Length()];
-        for (int i = ZERO; i < initArray.length; i++) {
-            initArray[i] = val;
+    @Override
+    public String toString() {
+        String shipStatus = "";
+        boolean isSunken = this.isSunk();
+        for (int i = ZERO; i < this.hit.length; i++) {
+            if (isSunken) {
+                shipStatus += "X";
+            } else {
+                shipStatus += (this.hit[i]) ? "S" : ".";
+            }
         }
-        return initArray;
+        return shipStatus;
     }
+
 }

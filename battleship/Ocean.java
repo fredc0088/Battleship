@@ -22,7 +22,7 @@ import static battleship.Constants.TEN;
  *
  * @author Federico Cocco
  */
-public class Ocean implements Damageable {
+public class Ocean<T extends Ship> implements Damageable {
 
     /**
      * The ships (and empty spaces) on the board.
@@ -44,13 +44,6 @@ public class Ocean implements Damageable {
      * The graphical representation of the board and its current status.
      */
     private Battlefield battlefield;
-    
-    /** initialisation for below variables */
-    {
-        this.shotsFired = ZERO;
-        this.shipsSunk = ZERO;
-        this.hitCount = ZERO;
-    }
 
     /**
      * Constructs a new <code>Ocean</code> according to the parameters.
@@ -66,133 +59,12 @@ public class Ocean implements Damageable {
     }
 
     /**
-     * This method is to place all ten ships randomly on the (initially empty)
-     * ocean (board).
-     */
-    public void placeAllShipsRandomly() {
-        ArrayList<Ship> theShips = initialiseShips();
-        for (Ship x : theShips) {
-            this.placeShipRandomly(x, this.ships, new Random());
-        }
-    }
-
-    /**
-     * This method places a ship on the board in a random way.
-     *
-     * @param ship
-     * @param board
-     */
-    private void placeShipRandomly(Ship ship, Ship[][] board, Random placer) {
-        /* Setting variables. */
-        int x = placer.nextInt(board.length),
-                y = placer.nextInt(board.length),
-                length = ship.Length();
-        boolean ship_orientation = placer.nextBoolean();
-        if (this.checkSpaceAvailability(x, y, length, board.length, ship_orientation)) {
-            ship.setBowRow(x); // Setting the position 
-            ship.setBowColumn(y); // of the front of the ship
-            ship.setHorizontal(ship_orientation); //  and its orientation.
-            for (int i = ZERO; i < length; i++) { // Iterate through the length of the ship.
-                if (ship.isHorizontal()) {
-                    board[x][y++] = ship;
-                } else {
-                    board[x++][y] = ship;
-                }
-            }
-        } else {
-            placeShipRandomly(ship, board, new Random()); //recursive call of the method with new placer.
-        }
-    }
-
-    /**
-     * This method check the availability on the board for a ship to be placed.
-     * It check first if still is iterating inside whitin the board's borders,
-     * the it checks all the surrounding spaces whether they are "empty". To
-     * verify that, <code>isOccupied</code> method is used.
-     *
-     * It also checks when the loop first start, if it is not on the border,
-     * whether the previous (diagonally as well) squares are occupied.
-     *
-     * This method aim to leave the ships completely detached from each other,
-     * in all directions.
-     *
-     * @param row
-     * @param column
-     * @param lenght_loop
-     * @param length_board
-     *
-     * @return <code>true</code> if it is possible to place a ship in the given
-     * spaces.
-     */
-    private boolean checkSpaceAvailability(int row, int column, int lenght_loop,
-            int length_board, boolean horizontality) {
-        boolean isFree = false; //flag that states whether the ship can be placed.
-        boolean flag = false; // flag to decide whether the loop start from o or -1.
-        /*
-         * check if there is need to consider to check the squares the squares
-         * in front of the bow of the ship (column or row, -1),
-         */
-        if (horizontality && column > ZERO) { // if horizontal
-            column--;
-            flag = true;
-        }
-        if (!horizontality && row > ZERO) { // or not.
-            row--;
-            flag = true;
-        }
-        for (int i = (flag) ? ZERO - ONE : ZERO; i <= lenght_loop; i++) {
-            /* Checks if we are still the boundary of the board, if the current 
-            position is occupied and, if they exist, the surrounding squares. */
-            if (row == length_board || column == length_board) {
-                break;
-            }
-            if (this.isOccupied(row, column) == false) {
-                if (horizontality) {
-                    if (row > ZERO && this.isOccupied(row - ONE, column)) {
-                        if (i == lenght_loop) {
-                            isFree = false;
-                        }
-                        break;
-                    }
-                    if (row < length_board - ONE && this.isOccupied(row + ONE, column)) {
-                        if (i == lenght_loop) {
-                            isFree = false;
-                        }
-                        break;
-                    }
-                    column++;
-                } else {
-                    if (column > ZERO && this.isOccupied(row, column - ONE)) {
-                        if (i == lenght_loop) {
-                            isFree = false;
-                        }
-                        break;
-                    }
-                    if (column < length_board - ONE && this.isOccupied(row, column + ONE)) {
-                        if (i == lenght_loop) {
-                            isFree = false;
-                        }
-                        break;
-                    }
-                    row++;
-                }
-                if (i == lenght_loop - ONE) { // set to true if all space TO BE OCCUPIED is checked
-                    isFree = true;
-                }
-            } else if (i == lenght_loop && this.isOccupied(row, column)) { // set flag back to false
-                isFree = false;                                          // if the space behind the ship
-            }                                                            // is occupied       
-        }
-        return isFree;
-    }
-
-    /**
      * This method initialise all the ships at the beginning of the game.
      *
      * @return an <code>ArrayList</code> containing the ships for the game.
      */
-    private ArrayList<Ship> initialiseShips() {
-        ArrayList<Ship> shipsInGame = new ArrayList<>();
+    private <T extends Ship> ArrayList initialiseShips() {
+        ArrayList shipsInGame = new ArrayList<>();
         shipsInGame.add(new Battleship());
         shipsInGame.add(new Cruiser());
         shipsInGame.add(new Cruiser());
@@ -214,15 +86,139 @@ public class Ocean implements Damageable {
      *
      * @return the <code>ArrayList</code> sorted
      */
-    private void sorting(ArrayList<Ship> toBeSorted) {
+    private <T extends Ship> void sorting(ArrayList<T> toBeSorted) {
         for (int i = ZERO; i < toBeSorted.size() - ONE; i++) {
-            Ship current_el = toBeSorted.get(i);
-            Ship next_el = toBeSorted.get(i + 1);
+            T current_el = toBeSorted.get(i);
+            T next_el = toBeSorted.get(i + 1);
             if (current_el.Length() < next_el.Length()) {
                 toBeSorted.set(i, next_el);
                 toBeSorted.set(i, current_el);
             }
         }
+    }
+
+    /**
+     * This method is to place all ships randomly on the (initially empty) ocean
+     * (board).
+     *
+     * @param <T>
+     */
+    public <T extends Ship> void placeAllShipsRandomly() {
+        ArrayList<T> theShips = initialiseShips();
+        for (T x : theShips) {
+            this.placeShipRandomly(x);
+        }
+    }
+
+    /**
+     * This method places a ship on the board randomly.
+     *
+     * @param ship
+     * @param board
+     */
+    private <T extends Ship> void placeShipRandomly(T ship) {
+        /* Setting variables. */
+        Random posAssigner = new Random();
+        boolean shipIsNotPlaced = true;
+        while (shipIsNotPlaced) {
+            int x = posAssigner.nextInt(this.ships.length),
+                    y = posAssigner.nextInt(this.ships.length);
+            boolean ship_orientation = posAssigner.nextBoolean();
+            if (this.checkSpaceAvailability(x, y, ship.Length(), ship_orientation)) {
+                ship.setBowRow(x); // Setting the position 
+                ship.setBowColumn(y); // of the front of the ship
+                ship.setHorizontal(ship_orientation); //  and its orientation.
+                for (int i = ZERO; i < ship.Length(); i++) { // Iterate through the length of the ship.
+                    if (ship.isHorizontal()) {
+                        this.ships[x][y++] = ship;
+                    } else {
+                        this.ships[x++][y] = ship;
+                    }
+                }
+                shipIsNotPlaced = false;
+            }
+        }
+    }
+
+    /**
+     * This method check the availability on the board for a ship to be placed.
+     * It check first if still is iterating inside whitin the board's borders,
+     * the it checks all the surrounding spaces whether they are "empty". To
+     * verify that, <code>isOccupied</code> method is used.
+     *
+     * It also checks when the loop first start, if it is not on the border,
+     * whether the previous (diagonally as well) squares are occupied.
+     *
+     * This method aim to leave the ships completely detached from each other,
+     * in all directions.
+     *
+     * @param row
+     * @param column
+     * @param ship_length
+     * @param length_board
+     *
+     * @return <code>true</code> if it is possible to place a ship in the given
+     * spaces.
+     */
+    private boolean checkSpaceAvailability(int row, int column, int ship_length, boolean horizontality) {
+        boolean isFreeSpace = false; //flag that states whether the ship can be placed.
+        boolean notStartFromBorder = false; // notStartFromBorder to decide whether the loop start from o or -1.
+        /*
+         * check if there is need to consider to check the squares the squares
+         * in front of the bow of the ship (column or row, -1),
+         */
+        if (horizontality && column > ZERO) { // if horizontal
+            column--;
+            notStartFromBorder = true;
+        }
+        if (!horizontality && row > ZERO) { // or not.
+            row--;
+            notStartFromBorder = true;
+        }
+        for (int i = (notStartFromBorder) ? ZERO - ONE : ZERO; i <= ship_length; i++) {
+            /* Checks if we are still the boundary of the board, if the current 
+            position is occupied and, if they exist, the surrounding squares. */
+            if (row == this.ships.length || column == this.ships.length) {
+                break;
+            }
+            if (this.isOccupied(row, column) == false) {
+                if (horizontality) {
+                    if (row > ZERO && this.isOccupied(row - ONE, column)) {
+                        if (i == ship_length) {
+                            isFreeSpace = false;
+                        }
+                        break;
+                    }
+                    if (row < this.ships.length - ONE && this.isOccupied(row + ONE, column)) {
+                        if (i == ship_length) {
+                            isFreeSpace = false;
+                        }
+                        break;
+                    }
+                    column++;
+                } else {
+                    if (column > ZERO && this.isOccupied(row, column - ONE)) {
+                        if (i == ship_length) {
+                            isFreeSpace = false;
+                        }
+                        break;
+                    }
+                    if (column < this.ships.length - ONE && this.isOccupied(row, column + ONE)) {
+                        if (i == ship_length) {
+                            isFreeSpace = false;
+                        }
+                        break;
+                    }
+                    row++;
+                }
+                if (i == ship_length - ONE) { // set to true if all space TO BE OCCUPIED is checked
+                    isFreeSpace = true;
+                }
+            } else if (i == ship_length && this.isOccupied(row, column)) { // set notStartFromBorder back to false
+                isFreeSpace = false;                                          // if the space behind the ship
+            }                                                            // is occupied       
+        }
+        return isFreeSpace;
     }
 
     /**
@@ -241,9 +237,6 @@ public class Ocean implements Damageable {
      */
     @Override
     public boolean shootAt(int row, int column) {
-        if (row != (int) row || column != (int) column) {
-            throw new IllegalArgumentException("Only entire numbers are allowed");
-        }
         if (row < ZERO || column < ZERO) {
             throw new IllegalArgumentException("Must enter only positive values");
         }
@@ -255,7 +248,7 @@ public class Ocean implements Damageable {
             if (this.hasSunkShipAt(row, column)) {
                 this.shipsSunk++; // updates total ship sunken
             }
-            if (this.battlefield.isAlreadyHit(row,column)) {
+            if (this.battlefield.isAlreadyHit(row, column)) {
                 this.battlefield.updateSquare(row, column, "S");
                 this.hitCount++; // updates total hits
             }
@@ -360,27 +353,25 @@ public class Ocean implements Damageable {
      * this position has not been shot yet.
      */
     public void print() {
-        for (int i = ZERO - ONE; i <= this.ships.length; i++) {
-            if (i >= ZERO && i < this.ships.length) {
+        for (int i = ZERO - TWO; i < this.ships.length; i++) {
+
+            if (i >= ZERO) {
                 System.out.print(i + "  ");
             }
-            for (int j = ZERO - TWO; j <= this.ships.length; j++) {
-                try {
-                    if (i < ZERO) {
-                        if (j >= ONE) {
-                            System.out.print(j - ONE);
-                        } else {
-                            System.out.print(" ");
-                        }
-                        continue;
-                    }
-                    if (this.hasSunkShipAt(i, j)) {
-                        this.battlefield.updateSquare(i,j,"X");
-                        this.battlefield.print(i,j);
+            for (int j = ZERO - TWO; j < this.ships.length; j++) {
+                if (i < ZERO - ONE) {
+                    System.out.print((j >= ZERO) ? j : " ");
+                } else if (i < ZERO) {
+                    System.out.print(" ");
+                } else if (i >= ZERO && j >= ZERO) {
+                    if (this.ships[i][j].isHorizontal()) {
+                        int column = ships[i][j].getBowColumn();
+                        System.out.print(this.ships[i][j].toString().charAt(((column - j) < 0) ? (column - j * column - j) : column - j));
                     } else {
-                        this.battlefield.print(i,j);
+                        int row = ships[i][j].getBowRow();
+                        int result = ((row - i) < 0) ? ((row - i) * (row - i)) : row - i;
+                        System.out.print(this.ships[i][j].toString().charAt(result));
                     }
-                } catch (IndexOutOfBoundsException ex) {
                 }
             }
             System.out.println(" ");
