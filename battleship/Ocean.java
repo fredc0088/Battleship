@@ -8,8 +8,6 @@ import static battleship.Constants.ZERO;
 
 import static battleship.Constants.ONE;
 
-import static battleship.Constants.TWO;
-
 import static battleship.Constants.TEN;
 
 /**
@@ -22,7 +20,7 @@ import static battleship.Constants.TEN;
  *
  * @author Federico Cocco
  */
-public class Ocean<T extends Ship> implements Damageable {
+public class Ocean implements Damageable {
 
     /**
      * The ships (and empty spaces) on the board.
@@ -42,19 +40,24 @@ public class Ocean<T extends Ship> implements Damageable {
     private int shipsSunk;
 
     /**
-     * Constructs a new <code>Ocean</code> according to the parameters.
+     * Constructs a new <code>Ocean</code>. It also constructs the board
+     * <code>ships</code> upon the game is played.
      */
     public Ocean() {
         this.ships = new Ship[TEN][TEN];
         for (int i = ZERO; i < ships.length; i++) {
             for (int y = ZERO; y < ships.length; y++) {
                 this.ships[i][y] = new EmptySea();
+                this.ships[i][y].setBowRow(i);
+                this.ships[i][y].setBowColumn(y);
+
             }
         }
     }
 
     /**
-     * This method initialise all the ships at the beginning of the game.
+     * This method initialise all the ships at the beginning of the game. To
+     * have a future implementation using DI.
      *
      * @return an <code>ArrayList</code> containing the ships for the game.
      */
@@ -75,7 +78,8 @@ public class Ocean<T extends Ship> implements Damageable {
     }
 
     /**
-     * This method sort a list of Ships in descending way by their size.
+     * This method sort a list of object generalising Ships in descending way by
+     * their size.
      *
      * @param toBeSorted
      *
@@ -94,7 +98,7 @@ public class Ocean<T extends Ship> implements Damageable {
 
     /**
      * This method is to place all ships randomly on the (initially empty) ocean
-     * (board).
+     * (board). It takes an object that extends <code>Ship</code>.
      *
      * @param <T>
      */
@@ -106,7 +110,7 @@ public class Ocean<T extends Ship> implements Damageable {
     }
 
     /**
-     * This method places a ship on the board randomly.
+     * This method places a ship on the board in a randomic way.
      *
      * @param ship
      * @param board
@@ -340,25 +344,26 @@ public class Ocean<T extends Ship> implements Damageable {
      * of what is going to appear on ouput: S : a place where a ship in that
      * position was hit. - : a shot hit an empty space. X : a sunken ship. . :
      * this position has not been shot yet.
+     *
+     * In order to achieve that, the method control the status of the ship,
+     * received by the current ship, and decide which where to print it.
      */
     public void print() {
-        for (int i = ZERO - TWO; i < this.ships.length; i++) {
-
+        for (int i = ZERO - ONE; i < this.ships.length; i++) {
             if (i >= ZERO) {
-                System.out.print(i + "  ");
+                System.out.print(i);
             }
-            for (int j = ZERO - TWO; j < this.ships.length; j++) {
-                if (i < ZERO - ONE) {
+            for (int j = ZERO - ONE; j < this.ships.length; j++) {
+                if (i < ZERO) {
                     System.out.print((j >= ZERO) ? j : " ");
-                } else if (i < ZERO) {
-                    System.out.print(" ");
                 } else if (i >= ZERO && j >= ZERO) {
                     if (this.ships[i][j].isHorizontal()) {
                         int column = ships[i][j].getBowColumn();
-                        System.out.print(this.ships[i][j].toString().charAt(((column - j) < 0) ? (column - j * column - j) : column - j));
+                        int result = ((column - j) < ZERO) ? (ZERO - (column - j)) : column - j;
+                        System.out.print(this.ships[i][j].toString().charAt(result));
                     } else {
                         int row = ships[i][j].getBowRow();
-                        int result = ((row - i) < 0) ? ((row - i) * (row - i)) : row - i;
+                        int result = ((row - ZERO) < 0) ? (ZERO - (row - i)) : row - i;
                         System.out.print(this.ships[i][j].toString().charAt(result));
                     }
                 }

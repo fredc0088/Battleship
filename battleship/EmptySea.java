@@ -1,6 +1,7 @@
 package battleship;
 
 import static battleship.Constants.ONE;
+import static battleship.Constants.ZERO;
 
 /**
  * This class represents a space on the ocean without ship in it. It is consider
@@ -55,10 +56,22 @@ public class EmptySea extends Ship {
      * @param column
      *
      * @return <code>false</code> as there is nothing to be shot.
+     * @see <code>Ship.shootAt</code>
      */
     @Override
     public boolean shootAt(int row, int column) {
-        return false;
+        return super.shootAt(row, column);
     }
 
+    /**
+     * Override the parent method toString, returning the status of the ship,
+     * different graphical representation if it is hit.
+     *
+     * @return graphical represntation of the status of the ship, "-" hit, "."
+     * never hit.
+     */
+    @Override
+    public String toString() {
+        return (this.getShipStatus()[ZERO]) ? "-" : ".";
+    }
 }
