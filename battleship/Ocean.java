@@ -359,12 +359,12 @@ public class Ocean implements Damageable {
                 } else if (i >= ZERO && j >= ZERO) {
                     if (this.ships[i][j].isHorizontal()) {
                         int column = ships[i][j].getBowColumn();
-                        int result = ((column - j) < ZERO) ? (ZERO - (column - j)) : column - j;
-                        System.out.print(this.ships[i][j].toString().charAt(result));
+                        int position = ((column - j) < ZERO) ? (ZERO - (column - j)) : column - j;
+                        System.out.print(this.ships[i][j].toString().charAt(position));
                     } else {
                         int row = ships[i][j].getBowRow();
-                        int result = ((row - ZERO) < 0) ? (ZERO - (row - i)) : row - i;
-                        System.out.print(this.ships[i][j].toString().charAt(result));
+                        int position = ((row - i) < ZERO) ? (ZERO - (row - i)) : row - i;
+                        System.out.print(this.ships[i][j].toString().charAt(position));
                     }
                 }
             }

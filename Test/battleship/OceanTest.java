@@ -1,13 +1,13 @@
 package Test.battleship;
 
-import battleship.Ocean;
-import battleship.Ship;
-import org.junit.AfterClass;
-import org.junit.BeforeClass;
+import battleship.*;
 import org.junit.Test;
 import static org.junit.Assert.*;
-import org.junit.Rule;
-import org.junit.rules.ExpectedException;
+import org.junit.*;
+import java.util.HashSet;
+import java.util.Set;
+import java.lang.Class;
+import java.lang.Class.*;
 
 /**
  *
@@ -15,7 +15,7 @@ import org.junit.rules.ExpectedException;
  */
 public class OceanTest {
 
-    public OceanTest() {        
+    public OceanTest() {
     }
 
     @BeforeClass
@@ -27,190 +27,147 @@ public class OceanTest {
     public static void tearDownClass() {
     }
 
-    @Rule
-    public ExpectedException thrown = ExpectedException.none();
-
     /**
-     * Test of placeAllShipsRandomly method, of class Ocean.
+     *
      */
-    @Test()
-    public void testPlaceAllShipsRandomly() {
-        System.out.println("placeAllShipsRandomly");
+    @Test
+    public void testTheOceanIsInitiallyEmpty() {
+        System.out.println("--------testTheOceanIsInitiallyEmpty-------");
         Ocean instance = new Ocean();
-        instance.placeAllShipsRandomly();
-        Ship[][] testArray = instance.getShipArray();
-        int count = 0;
-        for (Ship[] testArray1 : testArray) {
-            for (int j = 0; j < testArray.length; j++) {
-                if (testArray1[j].isRealShip()) {
-                    count++;
-                }
-                switch (testArray1[j].getClass().getName()) {
-                    case "battleship":
-                        System.out.print("b");
-                        break;
-                    case "cruiser":
-                        System.out.print("c");
-                        break;
-                    case "destroyer":
-                        System.out.print("d");
-                        break;
-                    case "submarine":
-                        System.out.print("s");
-                        break;
-                    default:
-                        System.out.print("e");
+        Ship[][] board = instance.getShipArray();
+        for (int i = 0; i < board.length; i++) {
+            for (int j = 0; j < board[i].length; j++) {
+                if (!(board[i][j] instanceof EmptySea)) {
+                    fail("Position at coordinates " + i + "and " + j + " is not an empty space class or being filled.");
                 }
             }
-            System.out.println();
         }
-        assertEquals(20, count);
-
     }
 
-    /**
-     * Test of shootAt method, of class Ocean.
-     */
     @Test
-    public void testShootAt() {
-        System.out.println("shootAt");
-        int row = 0;
-        int column = 0;
+    public void test10ShipsArePlacedAndRigthQuantityForEachType() {
+        System.out.println("--------test10ShipsArePlacedAndRigthQuantityForEachType-------");
         Ocean instance = new Ocean();
-        boolean expResult = false;
-        boolean result = instance.shootAt(row, column);
-        assertEquals(expResult, result);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
+        instance.placeAllShipsRandomly();
+        Ship[][] board = instance.getShipArray();
+        Set<Ship> testAgainst = new HashSet<>();
+        for (int i = 0; i < board.length; i++) {
+            for (int j = 0; j < board[i].length; j++) {
+                if (board[i][j].isRealShip()) {
+                    testAgainst.add(board[i][j]);
+                }
+            }
+        }
+        if (testAgainst.size() < 10) {
+            fail("There are less ships that it should.");
+        } else if (testAgainst.size() > 10) {
+            fail("Thre are more ships than it should.");
+        }
+        int submarine = 0, destroyer = 0, cruiser = 0, battleship = 0;
+        for (Ship s : testAgainst) {
+            switch (s.getClass().getSimpleName()) {
+                case "Battleship":
+                    battleship++;
+                    break;
+                case "Cruiser":
+                    cruiser++;
+                    break;
+                case "Destroyer":
+                    destroyer++;
+                    break;
+                case "Submarine":
+                    submarine++;
+                    break;
+                default:
+            }
+        }
+        if (submarine != 4 || destroyer != 3 || cruiser != 2 || battleship != 1) {
+            fail("The right number of ships for each type was not correctly placed");
+        }
     }
 
-    /**
-     * Test of isOccupied method, of class Ocean.
-     */
     @Test
-    public void testIsOccupied() {
-        System.out.println("isOccupied");
-        int row = 0;
-        int column = 0;
+    public void testShipsAreCorrectlyDistantiated() {
+        System.out.println("--------testShipsAreCorrectlyDistantiated-------");
         Ocean instance = new Ocean();
-        boolean expResult = false;
-        boolean result = instance.isOccupied(row, column);
-        assertEquals(expResult, result);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
+        instance.placeAllShipsRandomly();
+        Ship[][] board = instance.getShipArray();
+        boolean noDistance = false;
+        TestLoop:
+        for (int i = 0; i < board.length; i++) {
+            for (int j = 0; j < board[i].length; j++) {
+                if (!(board[i][j] instanceof EmptySea)) {
+                    if (i > 0) {
+                        if (j < board.length - 1 && !(board[i - 1][j + 1] instanceof EmptySea)) {
+                            noDistance = true; if(noDistance)break TestLoop;
+                        }
+                        noDistance = (board[i - 1][j] instanceof EmptySea) ? false : !(board[i - 1][j].equals(board[i][j]));
+                        if(noDistance)break TestLoop;
+                    }
+                    if (j > 0) {
+                        if (i > 0 && (board[i - 1][j - 1] instanceof EmptySea) == false) {
+                            noDistance = true; if(noDistance)break TestLoop;
+                        }
+                        noDistance = (board[i][j - 1] instanceof EmptySea) ? false : !(board[i][j - 1].equals(board[i][j]));
+                        if(noDistance)break TestLoop;
+                    }
+                    if (i < board.length - 1) {
+                        if (j > 0 && (board[i + 1][j - 1] instanceof EmptySea) == false) {
+                            noDistance = true; if(noDistance)break TestLoop;
+                        }
+                        noDistance = (board[i + 1][j] instanceof EmptySea) ? false : !(board[i + 1][j].equals(board[i][j]));
+                        if(noDistance)break TestLoop;
+                        if ((j < board.length - 1) && (board[i + 1][j + 1] instanceof EmptySea) == false) {
+                            noDistance = true; if(noDistance)break TestLoop;
+                        }
+                    }
+                    if (j < board.length - 1) {
+                        noDistance = (board[i][j + 1] instanceof EmptySea) ? false : !(board[i][j + 1].equals(board[i][j]));
+                        if(noDistance)break TestLoop;
+                    }
+                }
+            }
+        }
+        if (noDistance) {
+            fail("The distance of at least 1 square between ships has not been respected.");
+        }
     }
 
-    /**
-     * Test of hasSunkShipAt method, of class Ocean.
-     */
-    @Test
-    public void testHasSunkShipAt() {
-        System.out.println("hasSunkShipAt");
-        int row = 0;
-        int column = 0;
-        Ocean instance = new Ocean();
-        boolean expResult = false;
-        boolean result = instance.hasSunkShipAt(row, column);
-        assertEquals(expResult, result);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
-    }
-
-    /**
-     * Test of getShipTypeAt method, of class Ocean.
-     */
 //    @Test
-//    public void testGetShipTypeAt() {
-//        System.out.println("getShipTypeAt");
-//        int row = 0;
-//        int column = 0;
+//    public void testGetShipTypeAtGivenPosition() throws NoSuchFieldException, IllegalArgumentException, IllegalAccessException {
+//        System.out.println("--------testGetShipTypeAtGivenPosition-------");
+//        System.out.println("        For getShipTypeAt()");
 //        Ocean instance = new Ocean();
-//        Ship[][] arrayTest = instance.getShipArray();
-//        String expResult = arrayTest[3][4].getShipType();
-//        String result = instance.getShipTypeAt(row, column);
-//        assertEquals(expResult, result);
+//        instance.placeAllShipsRandomly();
+//        Ship[][] board = instance.getShipArray();
+//        board[7][5] = new Submarine();
+//        Field ships = instance.getClass().getField("ships");
+//        ships.set(instance, "reflecting on life");
 //    }
-
-    /**
-     * Test of getShotsFired method, of class Ocean.
-     */
-    @Test
-    public void testGetShotsFired() {
-        System.out.println("getShotsFired");
+//    
+    
+    public void testGetShipTypeAtGivenPosition() throws NoSuchFieldException, IllegalArgumentException, IllegalAccessException {
+        System.out.println("--------testGetShipTypeAtGivenPosition-------");
+        System.out.println("        For getShipTypeAt()");
         Ocean instance = new Ocean();
-        int expResult = 0;
-        int result = instance.getShotsFired();
-        assertEquals(expResult, result);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
+        instance.placeAllShipsRandomly();
+        Ship[][] board = instance.getShipArray();
+        
+    }
+    
+    @Test
+    public void testGameOver() {
+        System.out.println("--------testShipsAreCorrectlyDistantiated-------");
+        System.out.println("        For isGameOver()");
+        Ocean instance = new Ocean();
+        instance.placeAllShipsRandomly();
+        for (int i = 0; i < 10; i++) {
+            for (int j = 0; j < 10; j++) {
+                instance.shootAt(i, j);
+            }
+        }
+        assertTrue(instance.isGameOver());
     }
 
-    /**
-     * Test of getHitCount method, of class Ocean.
-     */
-    @Test
-    public void testGetHitCount() {
-        System.out.println("getHitCount");
-        Ocean instance = new Ocean();
-        int expResult = 0;
-        int result = instance.getHitCount();
-        assertEquals(expResult, result);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
-    }
-
-    /**
-     * Test of getShipsSunk method, of class Ocean.
-     */
-    @Test
-    public void testGetShipsSunk() {
-        System.out.println("getShipsSunk");
-        Ocean instance = new Ocean();
-        int expResult = 0;
-        int result = instance.getShipsSunk();
-        assertEquals(expResult, result);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
-    }
-
-    /**
-     * Test of isGameOver method, of class Ocean.
-     */
-    @Test
-    public void testIsGameOver() {
-        System.out.println("isGameOver");
-        Ocean instance = new Ocean();
-        boolean expResult = false;
-        boolean result = instance.isGameOver();
-        assertEquals(expResult, result);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
-    }
-
-    /**
-     * Test of getShipArray method, of class Ocean.
-     */
-    @Test
-    public void testGetShipArray() {
-        System.out.println("getShipArray");
-        Ocean instance = new Ocean();
-        Ship[][] expResult = null;
-        Ship[][] result = instance.getShipArray();
-        assertArrayEquals(expResult, result);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
-    }
-
-    /**
-     * Test of print method, of class Ocean.
-     */
-    @Test
-    public void testPrint() {
-        System.out.println("print");
-        Ocean instance = new Ocean();
-        instance.print();
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
-    }
-
+    
 }
