@@ -37,7 +37,10 @@ public abstract class Ship implements Damageable {
      */
     public Ship(int length) {
         this.length = length;
-        this.hit = initialise(false);
+        this.hit = new boolean[this.length];
+        for (int i = ZERO; i < this.hit.length; i++) {
+            this.hit[i] = false;
+        }
     }
 
     /**
@@ -59,7 +62,7 @@ public abstract class Ship implements Damageable {
     }
 
     /**
-     * This method stated whther the ship is on a horizantal position.
+     * This method stated whether the ship is on a horizantal position.
      *
      * @return <code>true</code> if the ship occupies a single row.
      */
@@ -116,21 +119,24 @@ public abstract class Ship implements Damageable {
     }
 
     /**
-     * This method checks whether a ship has been hit or not. If a part of the
-     * ship occupies the given row and column, and the ship hasn't been sunk,
-     * that part of the ship will be considered as hit.
+     * This method checks where a ship has been hit. If a part of the ship
+     * occupies the given row and column, and the ship hasn't been sunk, that
+     * part of the ship will be considered as hit.
      *
      * @param row
      * @param column
      *
-     * @return <code>true</code> if the ship was hit.
+     * @return <code>true</code> if the ship was hit. <code>False</code> if the
+     * ship was already sunk.
      */
     @Override
     public boolean shootAt(int row, int column) {
         if (this.isSunk() == false) {
             this.findPartHit(row, column, this.getBowRow(), this.getBowColumn(), ZERO);
             this.hit[this.currentPart] = true;
-            return true;
+            if (this.isRealShip()) {
+                return true;
+            }
         }
         return false;
     }
@@ -143,6 +149,15 @@ public abstract class Ship implements Damageable {
      */
     public boolean isRealShip() {
         return true;
+    }
+
+    /**
+     * This method returns the current status of the ship.
+     *
+     * @return the array representing the ships' status.
+     */
+    public boolean[] getShipStatus() {
+        return this.hit;
     }
 
     /**
@@ -163,17 +178,18 @@ public abstract class Ship implements Damageable {
     }
 
     /**
-     * This helper method checks whether the given coordinates on the board
-     * match with any part of the ship. It first checks the front, if that is
-     * not the part hit, it recursevely checks the rest of the ship.
+     * This helper method checks which part of the ship the given coordinates
+     * match with. It first checks the front; then, if that is not the part hit,
+     * it recursevely checks the rest of the ship. Then it updates which part
+     * has been found.
      *
      * @param row
      * @param column
      * @param rowToCompare
      * @param columnToCompare
      * @param count
-     * @return <code>false</code> if no part was hit, otherwise
-     * <code>true</code>.
+     *
+     * @see currentPart
      */
     private void findPartHit(int row, int column, int rowToCompare, int columnToCompare, int shipPart) {
         if (row != rowToCompare || column != columnToCompare) {
@@ -188,16 +204,23 @@ public abstract class Ship implements Damageable {
     }
 
     /**
-     * Initialise a new array with <code>true</code> or <code>false</code>.
+     * This method override the inherited method toString, using it to print the
+     * current status of the ship in a more graphical way.
      *
-     * @param val
-     * @return a filled array of <code>boolean</code> values.
+     * @return the status of the Ship as <code>String</code> representation.
      */
-    private boolean[] initialise(boolean val) {
-        boolean[] initArray = new boolean[this.Length()];
-        for (int i = ZERO; i < initArray.length; i++) {
-            initArray[i] = val;
+    @Override
+    public String toString() {
+        String shipStatus = "";
+        boolean isSunken = this.isSunk();
+        for (int i = ZERO; i < getShipStatus().length; i++) {
+            if (isSunken) {
+                shipStatus += "X";
+            } else {
+                shipStatus += (getShipStatus()[i]) ? "S" : ".";
+            }
         }
-        return initArray;
+        return shipStatus;
     }
+
 }
