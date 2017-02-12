@@ -5,7 +5,7 @@ import static battleship.Constants.ZERO;
 import static battleship.Constants.ONE;
 
 /**
- * This class is a represnetation of a general ship archetipe for the game, to
+ * This class is a representation of a general ship archetipe for the game, to
  * be used to construct specific types of ships.
  *
  * @author Federico Cocco

@@ -3,197 +3,175 @@ package Test.battleship;
 import battleship.Ship;
 import battleship.EmptySea;
 import battleship.Battleship;
-import org.junit.AfterClass;
-import org.junit.BeforeClass;
 import org.junit.Test;
 import static org.junit.Assert.*;
 
 /**
- *
+ *  This is a series of tests for the Ship class, therefore its concrete implementation
+ *  is testes (choice: Battleship).
+ * 
  * @author Federico Cocco
  */
 public class ShipTest {
-
-    private Battleship instance;
     
     public ShipTest() {
-        this.instance = new Battleship();;
     }
-
-    @BeforeClass
-    public static void setUpClass() {      
-    }
-
-    @AfterClass
-    public static void tearDownClass() {
-    }
-
-
+    
     /**
-     * Test of isHorizontal method, of class Ship.
+     * Test: if the right length has been set and
+     *      can be rerieved.
      */
     @Test
-    public void testIsHorizontal() {
-        System.out.println("isHorizontal");
-        Ship instance_test = new Battleship();
-        instance_test.setHorizontal(true);
-        boolean expResult = true;
-        boolean result = instance_test.isHorizontal();
-        assertEquals(expResult, result);
-    }
-
-    /**
-     * Test of Length method, of class Ship.
-     */
-    @Test
-    public void testLength() {
-        System.out.println("Length");
-        Ship instance = null;
-        int expResult = 0;
-        int result = instance.Length();
-        assertEquals(expResult, result);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
-    }
-
-    /**
-     * Test of getShipType method, of class Ship.
-     */
-    @Test
-    public void testGetShipType() {
-        System.out.println("getShipType");
-        Battleship instance = new Battleship();;
-        String expResult = "Battleship";
-        String result = instance.getShipType();
-        assertEquals(expResult, result);
-    }
-
-    /**
-     * Test of setBowRow method, of class Ship.
-     */
-    @Test
-    public void testSetBowRow() {
-        System.out.println("setBowRow");
-        int row = 5;
+    public void TestGetShipLength() {
+        System.out.println("--------TestGetShipLength-------");
+        System.out.println("        For Length()");
         Ship instance = new Battleship();
-        instance.setBowRow(row);
-        assertEquals("5", instance.getBowRow());
+        int expectedResult = 4;
+        assertEquals(expectedResult, instance.Length());
     }
-
+    
     /**
-     * Test of setBowRow if negative value is given.
-     */
-    @Test(expected = IllegalArgumentException.class)
-    public void testSetNegativeBowRow() {
-        int row = -5;
-        Ship instance = new Battleship();
-        instance.setBowRow(row);
-    }
-
-    /**
-     * Test of setBowColumn method, of class Ship.
+     * Test: the method can access the private field representing 
+     *      the column on the board the bow is located in. 
+     *      It retrieves the field as before being initialised thus
+     *      holding a default value.
      */
     @Test
-    public void testSetBowColumn() {
-        System.out.println("setBowColumn");
-        int column = 0;
-        Ship instance = null;
-        instance.setBowColumn(column);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
+    public void testGetBowRowAsDefault() {
+        System.out.println("--------testGetBowRowAsDefault-------");
+        System.out.println("        For setBowRow() and getBowRow()");
+        Ship instance = new EmptySea();
+        assertEquals(0, instance.getBowRow());
     }
-
-        /**
-     * Test of getBowRow method, of class Ship.
+    
+    /**
+     * Test: the method can access the private field representing 
+     *      the column on the board the bow is located in. 
+     *      It retrieves the field as before being initialised thus
+     *      holding a default value.
+     */
+    @Test
+    public void testGetBowColumnAsDefault() {
+        System.out.println("--------testGetBowColumn-------");
+        System.out.println("        For setBowColumn() and getBowColumn()");
+        Ship instance = new EmptySea();
+        assertEquals(0, instance.getBowColumn());
+        
+    }
+    
+    /**
+     * Test: the methods can access the private field representing 
+     *      the column on the board the bow is located in. 
+     *      setBowRow can set the value of it, and getBowRow
+     *      can retrieve it.
      */
     @Test
     public void testGetBowRow() {
-        System.out.println("getBowRow");
-        Ship instance = new Battleship();
-        int expResult = 0;
-        int result = instance.getBowRow();
-        assertEquals(expResult, result);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
-    }
-
-    /**
-     * Test of getBowColumn method, of class Ship.
-     */
-    @Test
-    public void testGetBowColumn() {
-        System.out.println("getBowColumn");
-        Ship instance = null;
-        int expResult = 0;
-        int result = instance.getBowColumn();
-        assertEquals(expResult, result);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
+        System.out.println("--------testGetBowRow-------");
+        System.out.println("        For setBowRow() and getBowRow()");
+        Ship instance = new EmptySea();
+        instance.setBowRow(3);
+        int expectedResult = 3;
+        assertEquals(expectedResult, instance.getBowRow());
     }
     
     /**
-     * Test of setHorizontal method, of class Ship.
+     * Test: the methods can access the private field representing 
+     *      the column on the board the bow is located in. 
+     *      setBowColumn can set the value of it, and getBowColumn
+     *      can retrieve it.
      */
     @Test
-    public void testSetHorizontal() {
-        System.out.println("setHorizontal");
-        boolean horizontal = false;
-        Ship instance = null;
-        instance.setHorizontal(horizontal);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
-    }
-
-    /**
-     * Test of shootAt method, of class Ship.
-     */
-    @Test
-    public void testShootAt() {
-        System.out.println("shootAt");
-        int row = 0;
-        int column = 0;
-        Ship instance = null;
-        boolean expResult = false;
-        boolean result = instance.shootAt(row, column);
-        assertEquals(expResult, result);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
-    }
-
-    /**
-     * Test of isRealShip method, of class Ship.
-     */
-    @Test
-    public void testIsRealShip() {
-        System.out.println("isRealShip");
+    public void testGetBowColumn() {
+        System.out.println("--------testGetBowColumn-------");
+        System.out.println("        For setBowColumn() and getBowColumn()");
         Ship instance = new EmptySea();
-        boolean expResult = false;
-        boolean result = instance.isRealShip();
-        assertEquals(expResult, result);
+        instance.setBowColumn(6);
+        int expectedResult = 6;
+        assertEquals(expectedResult, instance.getBowColumn());
+    }
+    
+    /**
+     * Test: set negative values for bow (both column or row) throws an
+     *      exception.
+     */
+    @Test(expected = IllegalArgumentException.class)
+    public void testSetNegativeValueForBowIsNotAllowed() {
+        System.out.println("--------testSetNegativeValueForBowIsNotAllowed-------");
+        System.out.println("        For setBowColumn() or setBowRow()");
+        Ship instance = new EmptySea();
+        instance.setBowColumn(0-2);
+    }
+    
+    /**
+     * Test: set and get the orientation of the ship. <code>true</code> if
+     *      the ship is horizontal.
+     */
+    @Test
+    public void testSetAndGetHorizontality() {
+        System.out.println("--------testSetAndGetHorizontality-------");
+        System.out.println("        For setHorizontal() or isHorizontal()");
+        Ship instance = new EmptySea();
+        instance.setHorizontal(false);
+        boolean expectedResult = false;
+        assertEquals(expectedResult, instance.isHorizontal());
+    }
+    
+    /**
+     * Test: a shot at different coordinates should not hit the ship.
+     */
+    @Test
+    public void testMissingToHitShip() {
+        System.out.println("--------testMissingToHitShip-------");
+        System.out.println("        For shootAt()");
+        Ship instance = new Battleship();
+        instance.setHorizontal(true);
+        instance.setBowRow(9);
+        instance.setBowColumn(2);
+        if(instance.shootAt(8, 2)) {
+            fail("The ship should not be hit by this shot.");
+        }
+    }
+    
+    /**
+     * Test: the right part of the ship gets hit. Also test that the ship
+     *      can sense to be hit. Also it demonstrates 
+     */
+    @Test
+    public void testShootAtCloserPartToTheBow() {
+        System.out.println("--------testShootAtCloserPartToTheBow-------");
+        System.out.println("        For shootAt()");
+        Ship instance = new Battleship();
+        instance.setHorizontal(true);
+        instance.setBowRow(4);
+        instance.setBowColumn(6);
+        if(instance.shootAt(4, 7) == false) {
+            fail("Unexpected error, the ship does not recognised as it was hit.");
+        }
+        assertTrue(instance.getShipStatus()[1]);
     }
 
     /**
-     * Test of isSunk method, of class Ship.
+     * Test: if the ship has not been sunk, it is hit. Otherwise not.
      */
     @Test
-    public void testIsSunk() {
-        System.out.println("isSunk");
+    public void testShipSunkCannotbeHit() {
+        System.out.println("--------testShipSunkCannotbeHit-------");
+        System.out.println("        For shootAt()");
         Ship instance = new Battleship();
-        boolean expResult = false;
-        boolean result = instance.isSunk();
-        assertEquals(expResult, result);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
+        instance.setHorizontal(true);
+        instance.setBowRow(4);
+        int row = instance.getBowRow();
+        instance.setBowColumn(6);
+        int column = instance.getBowColumn();
+        for(int i = 0; i<instance.Length(); i++){
+            instance.shootAt(row,column);
+            column++;
+        }
+        if(instance.shootAt(row, instance.getBowColumn())) {
+            fail("The ship counts as hit although is sunken");
+        }
+        
+        
     }
-
-//    public class ShipImpl extends Ship {
-//
-//        public ShipImpl() {
-//            super(0);
-//        }
-//
-//        public String getShipType() {
-//            return "";
-//        }
-//    }
 }
