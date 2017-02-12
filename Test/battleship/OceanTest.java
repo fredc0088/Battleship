@@ -8,7 +8,8 @@ import java.util.HashSet;
 import java.util.Set;
 
 /**
- *
+ * This is the test for the Ocean class in battleship package.
+ * 
  * @author Federico Cocco
  */
 public class OceanTest {
@@ -505,6 +506,7 @@ public class OceanTest {
             assertTrue(instance.isOccupied(row,column));
         }
     }
+    
     
     /**
      * Test: with all ships sunken, the game ends.
