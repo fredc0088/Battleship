@@ -78,10 +78,10 @@ public class Ocean implements Damageable {
     }
 
     /**
-     * This method sort a list of object generalising Ships in descending way by
+     * This method sort a list of objects generalising Ships in descending way by
      * their size.
      *
-     * @param toBeSorted
+     * @param toBeSorted array pre-sorting.
      *
      * @return the <code>ArrayList</code> sorted
      */
@@ -100,7 +100,7 @@ public class Ocean implements Damageable {
      * This method is to place all ships randomly on the (initially empty) ocean
      * (board). It takes an object that extends <code>Ship</code>.
      *
-     * @param <T>
+     * @param <T> generic type of ship.
      */
     public <T extends Ship> void placeAllShipsRandomly() {
         ArrayList<T> theShips = initialiseShips();
@@ -112,8 +112,7 @@ public class Ocean implements Damageable {
     /**
      * This method places a ship on the board in a randomic way.
      *
-     * @param ship
-     * @param board
+     * @param ship the ship object to be place.
      */
     private <T extends Ship> void placeShipRandomly(T ship) {
         /* Setting variables. */
@@ -153,11 +152,11 @@ public class Ocean implements Damageable {
      *
      * @param row
      * @param column
-     * @param ship_length
-     * @param length_board
+     * @param ship_length the length of the ship analysed.
+     * @param horizontality the orientation of the ship. 
      *
      * @return <code>true</code> if it is possible to place a ship in the given
-     * spaces.
+     *          spaces.
      */
     private boolean checkSpaceAvailability(int row, int column, int ship_length, boolean horizontality) {
         boolean isFreeSpace = false; //flag that states whether the ship can be placed.
@@ -183,29 +182,21 @@ public class Ocean implements Damageable {
             if (this.isOccupied(row, column) == false) {
                 if (horizontality) {
                     if (row > ZERO && this.isOccupied(row - ONE, column)) {
-                        if (i == ship_length) {
-                            isFreeSpace = false;
-                        }
+                        if (i == ship_length) isFreeSpace = false;
                         break;
                     }
                     if (row < this.ships.length - ONE && this.isOccupied(row + ONE, column)) {
-                        if (i == ship_length) {
-                            isFreeSpace = false;
-                        }
+                        if (i == ship_length) isFreeSpace = false;
                         break;
                     }
                     column++;
                 } else {
                     if (column > ZERO && this.isOccupied(row, column - ONE)) {
-                        if (i == ship_length) {
-                            isFreeSpace = false;
-                        }
+                        if (i == ship_length) isFreeSpace = false;
                         break;
                     }
                     if (column < this.ships.length - ONE && this.isOccupied(row, column + ONE)) {
-                        if (i == ship_length) {
-                            isFreeSpace = false;
-                        }
+                        if (i == ship_length) isFreeSpace = false;
                         break;
                     }
                     row++;
@@ -280,7 +271,7 @@ public class Ocean implements Damageable {
      * Returns the ship type at the given location (by calling the corresponding
      * method of that ship).
      *
-     * @param row
+     * @param row 
      * @param column
      * @return
      */
@@ -350,13 +341,10 @@ public class Ocean implements Damageable {
      */
     public void print() {
         for (int i = ZERO - ONE; i < this.ships.length; i++) {
-            if (i >= ZERO) {
-                System.out.print(i);
-            }
+            if (i >= ZERO) System.out.print(i);
             for (int j = ZERO - ONE; j < this.ships.length; j++) {
-                if (i < ZERO) {
-                    System.out.print((j >= ZERO) ? j : " ");
-                } else if (i >= ZERO && j >= ZERO) {
+                if (i < ZERO) System.out.print((j >= ZERO) ? j : " ");
+                else if (i >= ZERO && j >= ZERO) {
                     if (this.ships[i][j].isHorizontal()) {
                         int column = ships[i][j].getBowColumn();
                         int position = ((column - j) < ZERO) ? (ZERO - (column - j)) : column - j;

@@ -507,7 +507,6 @@ public class OceanTest {
         }
     }
     
-    
     /**
      * Test: with all ships sunken, the game ends.
      */
