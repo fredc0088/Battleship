@@ -2,8 +2,6 @@ package battleship;
 
 import static battleship.Constants.ZERO;
 
-import static battleship.Constants.ONE;
-
 /**
  * This class is a representation of a general ship archetipe for the game, to
  * be used to construct specific types of ships.
@@ -27,13 +25,10 @@ public abstract class Ship implements Damageable {
     /* The part(s) of the ship (square) hit. */
     private boolean[] hit;
 
-    /* Indicate which part of the ship is being the current context. */
-    private int currentPart;
-
     /**
      * Constructs a new <code>Ship</code> according to the parameters.
      *
-     * @param length
+     * @param length of the ship, as squared occupied.
      */
     public Ship(int length) {
         this.length = length;
@@ -46,7 +41,7 @@ public abstract class Ship implements Damageable {
     /**
      * This method returns the row where the front is on.
      *
-     * @return int <code>bowRow</code>
+     * @return <code>bowRow</code>
      */
     public int getBowRow() {
         return this.bowRow;
@@ -62,7 +57,7 @@ public abstract class Ship implements Damageable {
     }
 
     /**
-     * This method stated whether the ship is on a horizantal position.
+     * This method stated whether the ship is on a horizontal position.
      *
      * @return <code>true</code> if the ship occupies a single row.
      */
@@ -73,7 +68,7 @@ public abstract class Ship implements Damageable {
     /**
      * This method is to obtain how many squares the ship occupies.
      *
-     * @return <code>lenght</code>
+     * @return <code>lenght</code> of the ship.
      */
     public int Length() {
         return this.length;
@@ -88,7 +83,7 @@ public abstract class Ship implements Damageable {
     /**
      * Set the value of <code>bowRow</code>.
      *
-     * @param row
+     * @param row value for the bow.
      */
     public void setBowRow(int row) {
         if (row < 0) {
@@ -100,7 +95,7 @@ public abstract class Ship implements Damageable {
     /**
      * Set the value of <code>bowColumn</code>.
      *
-     * @param column
+     * @param column value for the bow.
      */
     public void setBowColumn(int column) {
         if (column < 0) {
@@ -112,7 +107,7 @@ public abstract class Ship implements Damageable {
     /**
      * Set whether the ship is in horizontal position.
      *
-     * @param horizontal
+     * @param horizontal <code>true</code> if the orientation is horizontal.
      */
     public void setHorizontal(boolean horizontal) {
         this.horizontal = horizontal;
@@ -123,22 +118,52 @@ public abstract class Ship implements Damageable {
      * occupies the given row and column, and the ship hasn't been sunk, that
      * part of the ship will be considered as hit.
      *
-     * @param row
-     * @param column
+     * @param row hit.
+     * @param column hit.
      *
      * @return <code>true</code> if the ship was hit. <code>False</code> if the
-     * ship was already sunk.
+     *          ship was already sunk.
      */
     @Override
     public boolean shootAt(int row, int column) {
         if (this.isSunk() == false) {
-            this.findPartHit(row, column, this.getBowRow(), this.getBowColumn(), ZERO);
-            this.hit[this.currentPart] = true;
-            if (this.isRealShip()) {
-                return true;
+            int partFound = this.findPartHit(row, column, this.getBowRow(), this.getBowColumn());
+            if (partFound < this.Length()) {
+                this.hit[partFound] = true;
+                if (this.isRealShip()) return true;
             }
         }
         return false;
+    }
+
+    /**
+     * This method returns the part of the ship the given coordinates
+     * match with. It first checks the front; then, if that is not the part hit,
+     * it checks the rest of the ship. The method assumes the ship is certainly 
+     * being hit; although in order to return a result even if used independently
+     * and given different coordinates of the ones the ship is at, a value outside
+     * the ship is returned, to be handled accordingly from whatever is the context
+     * using this method.
+     * 
+     * @param row hit.
+     * @param column hit.
+     * @param rowToCompare row to compare the hit row against.
+     * @param columnToCompare column to compare the hit row against.
+     * 
+     * @return <code>int</code> value that represents the part hit. Else, it 
+     *          returns the value of the part AFTER the ship stern, a value to 
+     *          be handled outside the method.
+     * @see <code>Length</code>
+     */
+    private int findPartHit(int row, int column, int rowToCompare, int columnToCompare) {
+        for (int i = ZERO; i < this.Length(); i++) {
+            if (row == rowToCompare && column == columnToCompare) {
+                return i;
+            }
+            if (this.horizontal) columnToCompare++;
+            else rowToCompare++;
+        }
+        return this.Length(); // note: This condition will never happen with the current structure of the game.
     }
 
     /**
@@ -154,7 +179,7 @@ public abstract class Ship implements Damageable {
     /**
      * This method returns the current status of the ship.
      *
-     * @return the array representing the ships' status.
+     * @return the <code>boolean</code> array representing the ships' status.
      */
     public boolean[] getShipStatus() {
         return this.hit;
@@ -165,62 +190,35 @@ public abstract class Ship implements Damageable {
      * being in game.
      *
      * @return comparison of a count and <code>hit</code> array, indicating if
-     * any element in it is still <code>false</code> (not hit)
+     *          any element in it is still <code>false</code> (not hit).
+     * @see <code>Length</code>
      */
     public boolean isSunk() {
         int hitCount = ZERO;
         for (boolean i : this.hit) {
-            if (i == true) {
-                hitCount++;
-            }
+            if (i == true) hitCount++;
         }
         return hitCount == this.Length();
     }
 
     /**
-     * This helper method checks which part of the ship the given coordinates
-     * match with. It first checks the front; then, if that is not the part hit,
-     * it recursevely checks the rest of the ship. Then it updates which part
-     * has been found.
+     * This method prints the current status of the ship. 
+     * . as part of the ship never hit, S if the part has been hit, 
+     * the whole ship as X if sunken.
      *
-     * @param row
-     * @param column
-     * @param rowToCompare
-     * @param columnToCompare
-     * @param count
-     *
-     * @see currentPart
-     */
-    private void findPartHit(int row, int column, int rowToCompare, int columnToCompare, int shipPart) {
-        if (row != rowToCompare || column != columnToCompare) {
-            if (this.isHorizontal()) {
-                findPartHit(row, column, rowToCompare, columnToCompare + ONE, shipPart + ONE);
-            } else {
-                findPartHit(row, column, rowToCompare + ONE, columnToCompare, shipPart + ONE);
-            }
-        } else if (row == rowToCompare && column == columnToCompare) {
-            this.currentPart = shipPart;
-        }
-    }
-
-    /**
-     * This method override the inherited method toString, using it to print the
-     * current status of the ship in a more graphical way.
-     *
-     * @return the status of the Ship as <code>String</code> representation.
+     * @return the <code>String</code> representation of the status of the Ship.
+     * @see <code>isSunken</code>, <code>getShipStatus</code>
      */
     @Override
     public String toString() {
         String shipStatus = "";
         boolean isSunken = this.isSunk();
         for (int i = ZERO; i < getShipStatus().length; i++) {
-            if (isSunken) {
-                shipStatus += "X";
-            } else {
+            if (isSunken) shipStatus += "X";
+            else {
                 shipStatus += (getShipStatus()[i]) ? "S" : ".";
             }
         }
         return shipStatus;
     }
-
 }

@@ -22,7 +22,6 @@ public class EmptySeaTest {
     public void testGetShipType() {
         System.out.println("--------testGetShipType-------");
         System.out.println("        For getShipType()");        
-        System.out.println("getShipType");
         EmptySea instance = new EmptySea();
         String expResult = "empty sea";
         String result = instance.getShipType();
@@ -80,9 +79,23 @@ public class EmptySeaTest {
         instance.setBowRow(4);
         instance.setBowColumn(6);
         if(instance.shootAt(4, 6)) {
-            fail("It should not sens as being hit.");
+            fail("It should not sense as being hit.");
         }
         assertTrue(instance.getShipStatus()[0]);
     }
     
+        /**
+     * Test: to string returns the right graphical representation of the ship
+     *      in its current status.
+     */
+    @Test 
+    public void testGetStringRepresentationOfShipSTatus() {
+        System.out.println("--------testGetStringRepresentationOfShipSTatus-------");
+        System.out.println("        For toString()");
+        Ship instance = new EmptySea();
+        instance.setBowRow(3);
+        instance.setBowColumn(6);
+        instance.shootAt(3, 6);
+        assertEquals("-", instance.toString());
+    }
 }

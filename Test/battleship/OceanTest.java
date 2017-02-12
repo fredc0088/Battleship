@@ -346,9 +346,9 @@ public class OceanTest {
         boolean isHorizontal;
         if (toTest != null) {
             isHorizontal = toTest.isHorizontal();
-            int row = toTest.getBowRow(), column = toTest.getBowColumn();
             int i = 0;
             while(i < 2) {
+                int row = toTest.getBowRow(), column = toTest.getBowColumn();
                 for (int j = 0; j < toTest.Length(); j++) {
                     instance.shootAt(row, column);
                     if (isHorizontal) {
@@ -506,7 +506,6 @@ public class OceanTest {
             assertTrue(instance.isOccupied(row,column));
         }
     }
-    
     
     /**
      * Test: with all ships sunken, the game ends.

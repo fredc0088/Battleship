@@ -64,10 +64,11 @@ public class EmptySea extends Ship {
     }
 
     /**
-     * Override the parent method toString, returning the status of the ship,
-     * different graphical representation if it is hit.
+     * This method prints the current status of the ship. 
+     * . as part of the ship never hit, if hit it will indicate - as a hit on 
+     * an empty square of the game.
      *
-     * @return graphical represntation of the status of the ship, "-" hit, "."
+     * @return string representation of the status of the ship, "-" hit, "."
      * never hit.
      */
     @Override

@@ -2,6 +2,8 @@ package battleship;
 
 import java.util.Random;
 
+import java.util.List;
+
 import java.util.ArrayList;
 
 import static battleship.Constants.ZERO;
@@ -59,10 +61,10 @@ public class Ocean implements Damageable {
      * This method initialise all the ships at the beginning of the game. To
      * have a future implementation using DI.
      *
-     * @return an <code>ArrayList</code> containing the ships for the game.
+     * @return an <code>List</code> containing the ships for the game.
      */
-    private <T extends Ship> ArrayList initialiseShips() {
-        ArrayList shipsInGame = new ArrayList<>();
+    private <T extends Ship> List initialiseShips() {
+        List shipsInGame = new ArrayList<>();
         shipsInGame.add(new Battleship());
         shipsInGame.add(new Cruiser());
         shipsInGame.add(new Cruiser());
@@ -78,14 +80,13 @@ public class Ocean implements Damageable {
     }
 
     /**
-     * This method sort a list of object generalising Ships in descending way by
+     * This method sort a list of objects generalising Ships in descending way by
      * their size.
      *
-     * @param toBeSorted
-     *
+     * @param toBeSorted array pre-sorting.
      * @return the <code>ArrayList</code> sorted
      */
-    private <T extends Ship> void sorting(ArrayList<T> toBeSorted) {
+    private <T extends Ship> void sorting(List<T> toBeSorted) {
         for (int i = ZERO; i < toBeSorted.size() - ONE; i++) {
             T current_el = toBeSorted.get(i);
             T next_el = toBeSorted.get(i + 1);
@@ -100,10 +101,11 @@ public class Ocean implements Damageable {
      * This method is to place all ships randomly on the (initially empty) ocean
      * (board). It takes an object that extends <code>Ship</code>.
      *
-     * @param <T>
+     * @param <T> generic type of ship.
+     * @see <code>placeShipRandomly</code>
      */
     public <T extends Ship> void placeAllShipsRandomly() {
-        ArrayList<T> theShips = initialiseShips();
+        List<T> theShips = initialiseShips();
         for (T x : theShips) {
             this.placeShipRandomly(x);
         }
@@ -112,8 +114,8 @@ public class Ocean implements Damageable {
     /**
      * This method places a ship on the board in a randomic way.
      *
-     * @param ship
-     * @param board
+     * @param ship the ship object to be place.
+     * @see <code>checkSpaceAvailability</code>
      */
     private <T extends Ship> void placeShipRandomly(T ship) {
         /* Setting variables. */
@@ -124,8 +126,8 @@ public class Ocean implements Damageable {
                     y = posAssigner.nextInt(this.ships.length);
             boolean ship_orientation = posAssigner.nextBoolean();
             if (this.checkSpaceAvailability(x, y, ship.Length(), ship_orientation)) {
-                ship.setBowRow(x); // Setting the position 
-                ship.setBowColumn(y); // of the front of the ship
+                ship.setBowRow(x);                    // Setting the position 
+                ship.setBowColumn(y);                 // of the front of the ship
                 ship.setHorizontal(ship_orientation); //  and its orientation.
                 for (int i = ZERO; i < ship.Length(); i++) { // Iterate through the length of the ship.
                     if (ship.isHorizontal()) {
@@ -151,13 +153,13 @@ public class Ocean implements Damageable {
      * This method aim to leave the ships completely detached from each other,
      * in all directions.
      *
-     * @param row
-     * @param column
-     * @param ship_length
-     * @param length_board
-     *
+     * @param row y coordinate on the board.
+     * @param column x coordinate on the board.
+     * @param ship_length the length of the ship analysed.
+     * @param horizontality the orientation of the ship. 
      * @return <code>true</code> if it is possible to place a ship in the given
-     * spaces.
+     *          spaces.
+     * see: <code>isOccupied</code>
      */
     private boolean checkSpaceAvailability(int row, int column, int ship_length, boolean horizontality) {
         boolean isFreeSpace = false; //flag that states whether the ship can be placed.
@@ -170,7 +172,7 @@ public class Ocean implements Damageable {
             column--;
             notStartFromBorder = true;
         }
-        if (!horizontality && row > ZERO) { // or not.
+        if (!horizontality && row > ZERO) {   // or not.
             row--;
             notStartFromBorder = true;
         }
@@ -183,29 +185,21 @@ public class Ocean implements Damageable {
             if (this.isOccupied(row, column) == false) {
                 if (horizontality) {
                     if (row > ZERO && this.isOccupied(row - ONE, column)) {
-                        if (i == ship_length) {
-                            isFreeSpace = false;
-                        }
+                        if (i == ship_length) isFreeSpace = false;
                         break;
                     }
                     if (row < this.ships.length - ONE && this.isOccupied(row + ONE, column)) {
-                        if (i == ship_length) {
-                            isFreeSpace = false;
-                        }
+                        if (i == ship_length) isFreeSpace = false;
                         break;
                     }
                     column++;
                 } else {
                     if (column > ZERO && this.isOccupied(row, column - ONE)) {
-                        if (i == ship_length) {
-                            isFreeSpace = false;
-                        }
+                        if (i == ship_length) isFreeSpace = false;
                         break;
                     }
                     if (column < this.ships.length - ONE && this.isOccupied(row, column + ONE)) {
-                        if (i == ship_length) {
-                            isFreeSpace = false;
-                        }
+                        if (i == ship_length) isFreeSpace = false;
                         break;
                     }
                     row++;
@@ -214,8 +208,8 @@ public class Ocean implements Damageable {
                     isFreeSpace = true;
                 }
             } else if (i == ship_length && this.isOccupied(row, column)) { // set notStartFromBorder back to false
-                isFreeSpace = false;                                          // if the space behind the ship
-            }                                                            // is occupied       
+                isFreeSpace = false;                                       // if the space behind the ship
+            }                                                              // is occupied       
         }
         return isFreeSpace;
     }
@@ -229,8 +223,8 @@ public class Ocean implements Damageable {
      * every time the user shoots at that same location. Once a ship has been
      * sunk, additional shots at its location should return false.
      *
-     * @param row
-     * @param column
+     * @param row y coordinate on the board.
+     * @param column x coordinate on the board.
      * @return <code>true</code> if the given location contains a real ship
      * still floating.
      */
@@ -256,9 +250,10 @@ public class Ocean implements Damageable {
     /**
      * Returns true if the given location contains a ship, false if it does not.
      *
-     * @param row
-     * @param column
-     * @return
+     * @param row y coordinate on the board.
+     * @param column x coordinate on the board.
+     * @return <code>true</code> if there is a ship and not just the sea.
+     * @see <code>Ship.isRealShip</code>
      */
     public boolean isOccupied(int row, int column) {
         return this.ships[row][column].isRealShip();
@@ -267,22 +262,23 @@ public class Ocean implements Damageable {
     /**
      * Returns true if the given location contains a ship, false if it does not.
      *
-     * @param row
-     * @param column
-     * @return
+     * @param row y coordinate on the board.
+     * @param column x coordinate on the board.
+     * @return <code>true</code> if there is a sunken ship.
+     * @see <code>Ship.isSunk</code>
      */
     public boolean hasSunkShipAt(int row, int column) {
-        Ship ship_analysed = this.ships[row][column];
-        return ship_analysed.isSunk();
+        return this.ships[row][column].isSunk();
     }
 
     /**
      * Returns the ship type at the given location (by calling the corresponding
      * method of that ship).
      *
-     * @param row
-     * @param column
-     * @return
+     * @param row y coordinate on the board.
+     * @param column x coordinate on the board.
+     * @return the type of ship in that position.
+     * see <code>Ship.getShipType</code>
      */
     public String getShipTypeAt(int row, int column) {
         return this.ships[row][column].getShipType();
@@ -292,7 +288,7 @@ public class Ocean implements Damageable {
      * Gets how many shots have been fired until that moment during the current
      * game.
      *
-     * @return the number of shots fired.
+     * @return <code>shotsFired</code> the number of shots fired.
      */
     public int getShotsFired() {
         return this.shotsFired;
@@ -303,7 +299,7 @@ public class Ocean implements Damageable {
      * current game. All hits are counted, not just the first time a given
      * square is hit.
      *
-     * @return the number hits.
+     * @return <code>hitCount</code> the number of hits.
      */
     public int getHitCount() {
         return this.hitCount;
@@ -313,7 +309,7 @@ public class Ocean implements Damageable {
      * Gets how many ships has been sunken until that moment during the current
      * game.
      *
-     * @return the number of ships sunken.
+     * @return <code>shipsSunk</code>, the number of ship sunken.
      */
     public int getShipsSunk() {
         return this.shipsSunk;
@@ -322,7 +318,7 @@ public class Ocean implements Damageable {
     /**
      * Returns true if all ships have been sunk, otherwise false.
      *
-     * @return true if all 10 ships were sunken.
+     * @return <code>true</code> if all 10 ships were sunken.
      */
     public boolean isGameOver() {
         return this.getShipsSunk() >= TEN;
@@ -341,22 +337,19 @@ public class Ocean implements Damageable {
      * Prints the ocean on stdout.
      *
      * The squares are counted from 0 to 9. Here is a legend of the significance
-     * of what is going to appear on ouput: S : a place where a ship in that
-     * position was hit. - : a shot hit an empty space. X : a sunken ship. . :
-     * this position has not been shot yet.
+     * of what is going to appear on ouput: "S" : a place where a ship in that
+     * position was hit. "-" : a shot hit an empty space. "X" : a sunken ship. 
+     * "." : this position has not been shot yet.
      *
      * In order to achieve that, the method control the status of the ship,
      * received by the current ship, and decide which where to print it.
      */
     public void print() {
         for (int i = ZERO - ONE; i < this.ships.length; i++) {
-            if (i >= ZERO) {
-                System.out.print(i);
-            }
+            if (i >= ZERO) System.out.print(i);
             for (int j = ZERO - ONE; j < this.ships.length; j++) {
-                if (i < ZERO) {
-                    System.out.print((j >= ZERO) ? j : " ");
-                } else if (i >= ZERO && j >= ZERO) {
+                if (i < ZERO) System.out.print((j >= ZERO) ? j : " ");
+                else if (i >= ZERO && j >= ZERO) {
                     if (this.ships[i][j].isHorizontal()) {
                         int column = ships[i][j].getBowColumn();
                         int position = ((column - j) < ZERO) ? (ZERO - (column - j)) : column - j;
