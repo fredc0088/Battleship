@@ -8,7 +8,7 @@ import static battleship.Constants.ZERO;
  *
  * @author Federico Cocco
  */
-public abstract class Ship implements Damageable {
+public abstract class Ship implements Shootable {
 
     /* The row containing the front of the ship. */
     private int bowRow;

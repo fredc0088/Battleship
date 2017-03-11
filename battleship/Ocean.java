@@ -22,7 +22,7 @@ import static battleship.Constants.TEN;
  *
  * @author Federico Cocco
  */
-public class Ocean implements Damageable {
+public class Ocean implements Shootable {
 
     /**
      * The ships (and empty spaces) on the board.
